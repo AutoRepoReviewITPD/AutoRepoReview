@@ -2,9 +2,10 @@
 
 ## Sprint 0
 
-During Sprint 0, we use AI tools for:
+During Sprint 0, we used AI tools for:
 
-- Converting project description into goals
 - Refining report: structuring and clarifying meeting notes and research insights to produce the report
 - Researching existing solutions
-- Formatting text and improving grammar
+- Formatting text and improving grammar of docs files
+- Helping with converting written text into MD format
+- Formating the meeting transcript
