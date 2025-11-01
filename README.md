@@ -67,3 +67,5 @@ flowchart TD
 
 ## Documentation
 
+- `./docs/sprints` — Contains scripts, meeting notes, sprint reports, and other iterative documentation reflecting project progress.
+- `./docs/ai-usage.md` — Details how AI tools have been used within the project.
