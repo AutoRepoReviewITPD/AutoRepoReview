@@ -68,3 +68,12 @@ flowchart TD
 ## Documentation
 
 **[View Documentation Site](https://AutoRepoReviewITPD.github.io/AutoRepoReview/)** with sprint reports, meeting notes, and project documentation.
+- `./docs/sprints` — Contains scripts, meeting notes, sprint reports, and other iterative documentation reflecting project progress.
+- `./docs/ai-usage.md` — Details how AI tools have been used within the project.
+
+## How to run prototype
+
+1. Go to `prototype` directory
+2. Install uv if you don't have it yet - https://docs.astral.sh/uv/getting-started/installation/
+3. Run `uv run main.py <commit_a> <commit_b>`
+
