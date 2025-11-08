@@ -67,5 +67,4 @@ flowchart TD
 
 ## Documentation
 
-- `./docs/sprints` — Contains scripts, meeting notes, sprint reports, and other iterative documentation reflecting project progress.
-- `./docs/ai-usage.md` — Details how AI tools have been used within the project.
+**[View Documentation Site](https://AutoRepoReviewITPD/AutoRepoReview.github.io/AutoRepoReview/)** with sprint reports, meeting notes, and project documentation.

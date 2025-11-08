@@ -9,3 +9,6 @@ During Sprint 0, we used AI tools for:
 - Formatting text and improving grammar of docs files
 - Helping with converting written text into MD format
 - Formating the meeting transcript
+
+## Sprint 1
+- Generating site on GitHub Pages for the documentation: setting up MkDocs configuration, GitHub Actions workflow, and creating the documentation site structure
