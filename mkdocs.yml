@@ -26,10 +26,14 @@ nav:
   - Home: index.md
   - AI Usage: ai-usage.md
   - Sprints:
-    - Sprint 0:
-      - sprints/sprint-0/report.md
-      - sprints/sprint-0/meeting-1.md
-      - sprints/sprint-0/script.md
+      - Sprint 0:
+          - sprints/sprint-0/report.md
+          - sprints/sprint-0/meeting-0.md
+          - sprints/sprint-0/script.md
+
+      - Sprint 0:
+          - sprints/sprint-1/meeting-1.md
+          - sprints/sprint-1/script.md
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -44,4 +48,3 @@ markdown_extensions:
 
 plugins:
   - search
-
