@@ -102,11 +102,9 @@ Add error handling and retry logic
 sequenceDiagram
     participant User
     participant CLI
-    participant API
-    participant Model
 
 User ->> CLI: Give 2 commits
-CLI ->> User: Fail to fetch diff between 2 commits due to Git error; return the error message
+CLI ->> User: Fail to fetch diff between 2 commits due to Git error, return the error message
 ```
 
 ### Test
