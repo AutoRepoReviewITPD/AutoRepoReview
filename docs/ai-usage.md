@@ -12,3 +12,4 @@ During Sprint 0, we used AI tools for:
 
 ## Sprint 1
 - Generating site on GitHub Pages for the documentation: setting up MkDocs configuration, GitHub Actions workflow, and creating the documentation site structure
+- Transcribing and summarizing the meeting recording
