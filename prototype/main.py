@@ -14,6 +14,7 @@ def summary(start_commit: str, end_commit: str) -> None:
     print(f"Start commit: {start_commit}")
     print(f"End commit: {end_commit}\n")
 
+    print("Summary of changes:")
     for change_index, change in enumerate(changes):
         print(f"{change_index+1}. {change}")
 
