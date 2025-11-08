@@ -51,15 +51,12 @@ graph TD
 
 # Component Diagram
 
-```plantuml
-@startuml
-User --> [CLI]
-[CLI] -right-( (HTTP Interface)
-[API] -left- (HTTP Interface)
-[API] -right-( (AI Agent Interface)
-[Model] -left- (AI Agent Interface)
-
-@enduml
+```mermaid
+graph TD
+    CLI --> API
+    API --> Model
+    Model --> API
+    API --> CLI
 ```
 
 | Components | Description |
