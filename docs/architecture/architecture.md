@@ -33,18 +33,20 @@ graph TD
 
 # Use Case Diagram
 
-```plantuml
-@startuml
-User -> CLI : help
-CLI -> User : give all possible operations
+```mermaid
+graph TD
+    User -->|help| CLI
+    CLI -->|give all possible operations| User
+```
 
-User -> CLI: give a summary of diff
-CLI -> API: give a summary of diff
-API -> Model: give a summary of diff using a specific model
-Model -> API: return the result
-API -> CLI: preprocess result and return it
-CLI -> User: print the result
-@enduml
+```mermaid
+graph TD
+    User -->|give 2 commits| CLI
+    CLI -->|give a summary of diff| API
+    API -->|give a summary of diff using a specific model| Model
+    Model -->|return the result| API
+    API -->|preprocess result and return it| CLI
+    CLI -->|print the result| User
 ```
 
 # Component Diagram
