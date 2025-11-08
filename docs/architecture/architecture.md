@@ -47,3 +47,22 @@ CLI -> User: print the result
 @enduml
 ```
 
+# Component Diagram
+
+```plantuml
+@startuml
+User --> [CLI]
+[CLI] -right-( (HTTP Interface)
+[API] -left- (HTTP Interface)
+[API] -right-( (AI Agent Interface)
+[Model] -left- (AI Agent Interface)
+
+@enduml
+```
+
+| Components | Description |
+|---|---|
+|CLI|A program that is used by user in terminal to interact with the system|
+|API|A program that is used by CLI to use core of the system|
+|LLM model|An LLM model that gives the summary of changes between 2 commits|
+
