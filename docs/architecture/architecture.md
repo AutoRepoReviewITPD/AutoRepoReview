@@ -3,6 +3,16 @@
 ```mermaid
 
 graph TD
+    subgraph "System"
+        CLI
+        Model
+        API
+    end
+
+    subgraph "External Actors"
+        User
+    end
+
     User -->|Give 2 commits and get the summary| CLI
     CLI -->|Ask for summary based on 2 given commits| API
     API -->|Ask for summary based on 2 given commits| Model
@@ -20,4 +30,20 @@ graph TD
 |CLI|A program that is used by user in terminal to interact with the system|
 |API|A program that is used by CLI to use core of the system|
 |LLM model|An LLM model that gives the summary of changes between 2 commits|
+
+# Use Case Diagram
+
+```plantuml
+@startuml
+User -> CLI : help
+CLI -> User : give all possible operations
+
+User -> CLI: give a summary of diff
+CLI -> API: give a summary of diff
+API -> Model: give a summary of diff using a specific model
+Model -> API: return the result
+API -> CLI: preprocess result and return it
+CLI -> User: print the result
+@enduml
+```
 
