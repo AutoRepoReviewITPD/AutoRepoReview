@@ -1,27 +1,71 @@
 # Meeting Notes
 
-- ### Meeting Date: *07/11/2025*
+- ### Meeting Date: _07/11/2025_
 
 - ### Meeting Recording: [Link](https://drive.google.com/file/d/1CSEhXdarh2dbiwM_1_hlwVPIL82ShLTn/view?usp=drive_link)
 
 ## Meeting Summary
 
-- The tool should analyze and summarize code differences between commits, not just commit messages or code lines, to help users quickly understand what changed without reading code.
+### Interactive Prototype
 
-- It should provide information on contributors who made changes and highlight important modifications like deleted or rewritten code.
+- The prototype can be a CLI simulation/documentation showing commands being typed and the output printed.
 
-- Users want to specify the language model provider (e.g., Gemini) for summarization and be warned when feeding very large code diffs due to token/cost limits.
+### Plan and Goals
 
-- The tool should support working on local Git repositories first, with potential future integration of GitHub/GitLab for cloning repos.
+- **Primary Goal:** The tool must summarize the code differences (the _diff_) between commits/versions, explaining what changed without requiring the user to read the raw code diff or switching between versions.
 
-- Output will be simple text summaries in the CLI, with possible later enhancements like JSON output.
+- **Short-Term:** The initial focus is on ensuring the tool works with local Git repositories.
 
-- The project stack will likely use Python for ease of development and maintenance, with preferences for modern Python packaging.
+- Integration with GitHub or GitLab APIs is a low-priority future goal.
 
-- Prototyping involves creating an interactive CLI demo showing what commands to type and example outputs, with a help command considered essential.
+### Assumptions Disucssion
 
-- The architecture will be simple with core components for command parsing, Git diff extraction, and connecting to the selected LLM provider.
+- **LLM Provider:** The LLM is external and must be configurable (currently the LLM should be Gemini). The team must include an option for the user to provide their own **API key/endpoint**.
 
-- Additional features might include chunking large diffs for summarization and showing change histories per contributor.
+- **Input/Output:** The tool interacts with a local Git repository folder, and output is a plain text to the CLI with the option to export to a file.
 
----
+### Requirements
+
+#### Functional Requirements:
+
+- **Core Summary:** Must provide a summary of **code differences** (not commit messages).
+
+- **LLM Configuration:** Must allow the user to input the LLM API key and endpoint URL.
+
+- **Contributor Analysis:** Future feature to identify the person responsible for a specific change and summarize their other contributions.
+
+- **Command Structure:** Must include a basic `help` command.
+
+#### Quality Requirements:
+
+- Need for a **user warning** if the diff data being sent to the LLM is excessive (e.g., over 50,000 lines/tokens), requiring user confirmation due to potential API costs.
+
+- Strong customer preference for the tool to be written in **Python**.
+
+- We should use modern Python dependency management like **`pyproject.toml`**.
+
+### Constraints
+
+- **LLM Dependency:** The project is dependent on the customer providing their own Gemini LLM access/token.
+
+- **Scope:** Focus is limited to local Git interaction for now.
+
+### High-Level Architecture Draft
+
+An architecture that focuses on four main layers:
+
+1. **Command Layer:** Handles user input via the CLI (e.g., `help`, `summarize`).
+
+2. **Git Interaction / Parser Layer:** Extracts the necessary **diffs** and **contributor metadata** from the local repository.
+
+3. **LLM Service Layer:** Manages API configuration, context size warnings, and makes the `POST` request to the external LLM provider.
+
+4. **Output Layer:** Prints the final, summarized text directly to the CLI console.
+
+## Action Points (Draft)
+
+| General Meeting Outcome                                         | Actionable Item (WHO, WHAT, WHEN)                                                                                                                                                  |
+| :-------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| We need to figure out how to demonstrate the CLI tool           | **Team Member** to **Research and select a Python library** suitable for creating the CLI simulation prototype by **The end of sprint-2**.                                         |
+| We need a parsing component ready before we can summarize.      | **Team Members** to **Implement the Git parsing layer** to extract and format a simple commit **diff range** from a local repo by **End of sprint-3**.                             |
+| We should have the ability to identify contributions by author. | **Team Members** to **Draft mock-up text and logic** for the Contributor Analysis feature, showing how user input would trigger the contributor's summary, by **End of sprint 4**. |
