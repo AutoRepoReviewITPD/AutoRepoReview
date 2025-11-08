@@ -67,4 +67,4 @@ flowchart TD
 
 ## Documentation
 
-**[View Documentation Site](https://AutoRepoReviewITPD/AutoRepoReview.github.io/AutoRepoReview/)** with sprint reports, meeting notes, and project documentation.
+**[View Documentation Site](https://AutoRepoReviewITPD.github.io/AutoRepoReview/)** with sprint reports, meeting notes, and project documentation.
