@@ -8,7 +8,7 @@ We follow a lightweight, pragmatic process inspired by **[GitHub Flow](https://d
 
 ## Sprint Cycle (1-Week Cadence)
 
-A **Sprint** lasts **2 weeks** and follows this structure:
+A **Sprint** lasts **1 week** and follows this structure:
 
 | Phase | Duration | Activities |
 |------|----------|------------|
