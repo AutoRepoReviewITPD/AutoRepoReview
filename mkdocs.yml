@@ -25,6 +25,10 @@ theme:
 nav:
   - Home: index.md
   - AI Usage: ai-usage.md
+  - Architecture:
+      - architecture/architecture.md
+      - architecture/tech-stack.md
+  - requirements: quality-requirements.md
   - Sprints:
       - Sprint 0:
           - sprints/sprint-0/report.md
@@ -34,6 +38,11 @@ nav:
       - Sprint 1:
           - sprints/sprint-1/meeting-1.md
           - sprints/sprint-1/script.md
+
+      - Sprint 2:
+          - sprints/sprint-2/meeting-1.md
+          - sprints/sprint-2/script-1.md
+          - sprints/sprint-2/retrospective.md
 
 markdown_extensions:
   - pymdownx.highlight:
