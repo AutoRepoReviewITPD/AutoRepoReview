@@ -7,3 +7,13 @@ For the CLI development we decided to use Typer (https://typer.tiangolo.com/) si
 ## Model
 
 For the connection to the LLM model we decided to use LangChain (https://www.langchain.com/) since this is easy-to-use library for building AI agents.
+
+## Static analysis
+
+### Ruff
+
+[Ruff](https://docs.astral.sh/ruff/) was chosen for its efficiency (written on Rust) and simplicity. It works as both linter and formatter.
+
+### Mypy
+
+[Mypy](https://github.com/python/mypy) was chosen for its proven reliability in type check.
