@@ -16,5 +16,8 @@ jobs:
             - name: Run Ruff Formatting Check
               run: uv run ruff format --check .
             
+            - name: Run Ruff Check
+              run: uv run ruff check .
+            
             - name: Run Mypy
               run: uv run mypy .
