@@ -34,4 +34,6 @@ jobs:
             - uses: ./.github/actions/setup-uv
             
             - name: Run staging tests
+              env:
+                GIGACHAT_CREDENTIALS: ${{ secrets.GIGACHAT_CREDENTIALS }}
               run: uv run pytest tests/qas_tests
