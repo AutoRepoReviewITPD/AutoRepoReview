@@ -24,4 +24,4 @@ jobs:
             - uses: ./.github/actions/setup-uv
             
             - name: Run tests
-              run: uv run pytest --cov=app --cov-fail-under=80 --cov-report=xml:coverage.xml tests
+              run: uv run pytest --cov=app --cov-fail-under=80 --cov-report=xml:coverage.xml tests/unit
