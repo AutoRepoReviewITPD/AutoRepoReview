@@ -2,10 +2,8 @@
 
 import time
 import main
-import pytest
 
 
-@pytest.mark.skip
 def test_qas001_1(
     cloned_repo: str,
 ) -> None:
@@ -22,6 +20,8 @@ def test_qas001_1(
         elapsed_time = end - start
         if elapsed_time > time_threshold:
             failed_requests += 1
+
+        time.sleep(2)  # give LLM rest a bit
 
     assert failed_requests <= 1, (
         f"Number of failed requests: {failed_requests} out of {number_of_requests}"
