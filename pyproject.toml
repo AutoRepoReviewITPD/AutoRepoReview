@@ -20,4 +20,5 @@ dev = [
 ]
 
 [tool.mypy]
+mypy_path = "app"
 strict = true
