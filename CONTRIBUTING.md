@@ -1,6 +1,6 @@
 # Contributing to AutoRepoReview
 
-Thank you for your interest in contributing to **AutoRepoReview**! This document outlines our **Sprint cycle**, **Git workflow**, **branching and protection rules**, **commit conventions**, **issue and PR templates**, **review process**, **deployment strategy**, **license**, and **GitHub Projects** usage.
+This document outlines our **Sprint cycle**, **Git workflow**, **branching and protection rules**, **commit conventions**, **issue and PR templates**, **review process**, **deployment strategy**, **license**, and **GitHub Projects** usage.
 
 We follow a lightweight, pragmatic process inspired by **[GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow)**, adapted for a small academic team working on a CLI tool.
 
@@ -171,7 +171,7 @@ GitHub Projects
 We use one GitHub Project for backlog and sprint tracking:
 Project: [https://github.com/orgs/AutoRepoReviewITPD/projects/1](AutoRepoReview)
 
-####Views (in order)
+#### Views (in order)
 
 |#|View |Purpose|
 |--|-------|-------|
@@ -180,7 +180,7 @@ Project: [https://github.com/orgs/AutoRepoReviewITPD/projects/1](AutoRepoReview)
 
 
 
-Summary: Why This Workflow?
+#### Summary
 
 
 
@@ -194,15 +194,6 @@ Summary: Why This Workflow?
 |MIT License |Maximum openness|
 |GitHub Pages docs |Always up to date user guide|
 
-
-Ready to contribute?
-
-Fork the repo
-Create a feature branch
-Follow the rules above
-Open a PR
-
-We’re excited to see your contribution!
 
 ### Secrets
 
