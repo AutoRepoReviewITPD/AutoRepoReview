@@ -9,9 +9,6 @@ def test_qas004_1(
 ) -> None:
     repo = "https://github.com/ilnarkhasanov/AiToHuman"
     clone_path = "/tmp/repo"
-    git_service.clone(
-        repo,
-        clone_path
-    )
+    git_service.clone(repo, clone_path)
 
     main.summary(clone_path, "HEAD", "HEAD~1")
