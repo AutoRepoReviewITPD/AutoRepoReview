@@ -21,4 +21,6 @@ def test_qas001_1(
         if elapsed_time > time_threshold:
             failed_requests += 1
 
-    assert failed_requests <= 1, f"Number of failed requests: {failed_requests} out of {number_of_requests}"
+    assert failed_requests <= 1, (
+        f"Number of failed requests: {failed_requests} out of {number_of_requests}"
+    )
