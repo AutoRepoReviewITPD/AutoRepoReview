@@ -17,3 +17,9 @@ For the connection to the LLM model we decided to use LangChain (https://www.lan
 ### Mypy
 
 [Mypy](https://github.com/python/mypy) was chosen for its proven reliability in type check.
+
+## Testing
+
+### Pytest
+
+[Pytest](https://docs.pytest.org/en/stable/) was chosed for its easiness to use and fixtures functionality.
