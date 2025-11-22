@@ -22,3 +22,9 @@ We chose services, agent, and CLI modules since they are crucial for user intera
 Link: tests/qas_tests/test_qas001.py::test_qas001_1
 
 Implemented: I have done a test that requests system 10 times and allows to only one of them proceed longer that 30 seconds
+
+### QAS001-1
+
+Link: tests/qas_tests/test_qas004.py::test_qas004_1
+
+Implemented: I have done a test that requests system and check that nothing is failed
