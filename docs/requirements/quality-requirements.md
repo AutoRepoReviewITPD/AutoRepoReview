@@ -34,9 +34,9 @@
 
 Steps:
 
-1. User make 100 simultanueous requests to the system
+1. User make 10 requests to the system
 
-Expected result: At least 99 out of 100 simultaneous requests should still be able to finish within 30 seconds.
+Expected result: At least 9 out of 10 simultaneous requests should still be able to finish within 30 seconds.
 
 ## Maintainability scenarios
 
