@@ -1,4 +1,14 @@
+from agents.agent import Agent
+from models.gigachat import llm
+
+
 class SummarizeService:
+    def __init__(self) -> None:
+        self.agent = Agent(
+            llm,
+            tools=[],
+        )
+
     def prepare_prompt(self, diff: str) -> str:
         return f"""
             Below is the result of running 'git diff A B'. 
@@ -14,3 +24,7 @@ class SummarizeService:
             {diff}
             -----------
         """
+
+    def summarize(self, diff: str) -> str:
+        prompt = self.prepare_prompt(diff)
+        return self.agent.invoke(prompt)
