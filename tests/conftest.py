@@ -1,9 +1,10 @@
-import pytest
 from unittest.mock import Mock
-from langchain_core.language_models import LanguageModelLike
+import pytest
+
+from agents.agent import Agent
 from services.git_service import GitService
 from services.summarize_service import SummarizeService
-from agents.agent import Agent
+from langchain_core.language_models import LanguageModelLike
 
 
 @pytest.fixture
