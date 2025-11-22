@@ -1,4 +1,4 @@
-# Unit tests
+## Unit tests
 
 Unit tests are located at `tests/unit`.
 
@@ -14,3 +14,11 @@ We chose XML coverage report format since its easy to integrate it with other to
 We chose 80% as a coverage threshold since we should leave some space for code that is hard to test or not important.
 
 We chose services, agent, and CLI modules since they are crucial for user interaction and business logic.
+
+## Quality attribute scenario tests
+
+### QAS001-1
+
+Link: tests/qas_tests/test_qas001.py::test_qas001_1
+
+Implemented: I have done a test that requests system 10 times and allows to only one of them proceed longer that 30 seconds
