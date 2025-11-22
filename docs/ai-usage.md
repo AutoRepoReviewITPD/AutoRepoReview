@@ -22,3 +22,9 @@ We used AI tools for:
 - Formatting and summarizing meeting notes
 - Guidance and notes on how to write sprint retrospectives
 - Providing assistance with writing action points and constraints
+
+## Sprint 3
+
+- Comparing summaries from experiments with and without repository URL context
+- Writing methodology section for context impact experiment
+- Analyzing and documenting results and conclusions from diff summary quality experiments
