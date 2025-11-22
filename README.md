@@ -1,5 +1,8 @@
 # AutoRepoReview
 
+[![codecov](https://codecov.io/gh/AutoRepoReviewITPD/AutoRepoReview/branch/main/graph/badge.svg)](https://codecov.io/gh/AutoRepoReviewITPD/AutoRepoReview)
+
+
 AI-powered git repository change analysis
 
 ## Project Goals
