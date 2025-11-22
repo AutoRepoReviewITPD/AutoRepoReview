@@ -38,9 +38,7 @@ def test_summarize(
         return_value="Summary of changes",
     ) as mock_invoke:
         summary = summarize_service.summarize(diff)
-        mock_invoke.assert_called_with(
-            summarize_service.prepare_prompt(diff)
-        )
+        mock_invoke.assert_called_with(summarize_service.prepare_prompt(diff))
 
     assert isinstance(summary, str)
     assert len(summary) > 0
