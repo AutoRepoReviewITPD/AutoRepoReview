@@ -204,3 +204,6 @@ Open a PR
 
 We’re excited to see your contribution!
 
+### Secrets
+
+We add API keys to GitHub Secrets and reuse them for staging tests
