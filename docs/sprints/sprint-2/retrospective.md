@@ -1,4 +1,4 @@
-# Sprint 2 – Retrospective
+# Sprint Retrospective
 
 ## What Went Well
 
