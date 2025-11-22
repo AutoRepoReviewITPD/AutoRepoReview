@@ -6,17 +6,17 @@ We follow a lightweight, pragmatic process inspired by **[GitHub Flow](https://d
 
 ---
 
-## Sprint Cycle (2-Week Cadence)
+## Sprint Cycle (1-Week Cadence)
 
-A **Sprint** lasts **2 weeks** and follows this structure:
+A **Sprint** lasts **1 week** and follows this structure:
 
 | Phase | Duration | Activities |
 |------|----------|------------|
 | **Sprint Planning** | Day 1 | Review backlog → Prioritize issues → Assign tasks → Estimate effort |
-| **Development** | Days 2–12 | Work on assigned issues → Daily stand-ups (async via GitHub Discussions) |
-| **Review & Demo** | Day 13 | PR reviews → Fix feedback → Demo working features |
-| **Retrospective** | Day 14 | What went well? What to improve? Update process if needed |
-| **Release** | End of Day 14 | Tag release → Update changelog → Publish CLI (if applicable) |
+| **Development** | Days 2–6 | Work on assigned issues → Daily stand-ups (async via GitHub Discussions) |
+| **Review & Demo** | Day 7 | PR reviews → Fix feedback → Demo working features |
+| **Retrospective** | Day 7 | What went well? What to improve? Update process if needed |
+| **Release** | End of Day 7 | Tag release → Update changelog → Publish CLI (if applicable) |
 
 > **Purpose**: Ensures predictable progress, early feedback, and continuous improvement in a student team setting.
 
@@ -204,3 +204,6 @@ Open a PR
 
 We’re excited to see your contribution!
 
+### Secrets
+
+We add API keys to GitHub Secrets and reuse them for staging tests

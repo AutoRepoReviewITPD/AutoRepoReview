@@ -1,0 +1,25 @@
+[project]
+name = "prototype"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "langchain>=0.3.27",
+    "langchain-gigachat>=0.3.12",
+    "langgraph>=1.0.1",
+    "python-dotenv>=1.2.1",
+    "typer>=0.20.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+    "pytest>=9.0.1",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.6",
+]
+
+[tool.mypy]
+mypy_path = "app"
+strict = true
