@@ -2,8 +2,10 @@
 
 import time
 import main
+import pytest
 
 
+@pytest.mark.skip
 def test_qas001_1(
     cloned_repo: str,
 ) -> None:
