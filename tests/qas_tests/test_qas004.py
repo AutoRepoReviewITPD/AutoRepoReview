@@ -1,10 +1,8 @@
 # Link: https://github.com/AutoRepoReviewITPD/AutoRepoReview/blob/main/docs/requirements/quality-requirements.md#qast004-1
 
 import main
-import pytest
 
 
-@pytest.mark.skip
 def test_qas004_1(
     cloned_repo: str,
 ) -> None:
