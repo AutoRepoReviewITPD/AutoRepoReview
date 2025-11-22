@@ -23,10 +23,17 @@ class Agent:
             "content": content,
         }
 
-        return self.agent.invoke(
+        invocation = self.agent.invoke(
             {
                 "messages": [message],
                 "temperature": temperature,
             },
             config=self.config,
-        )["messages"][-1].content
+        )
+
+        response = invocation["messages"][-1].content
+
+        if not isinstance(response, str):
+            raise ValueError("Agent response is not a string")
+
+        return response
