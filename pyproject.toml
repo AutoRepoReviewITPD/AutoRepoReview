@@ -1,5 +1,5 @@
 [project]
-name = "prototype"
+name = "autoreporeview"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -19,6 +19,16 @@ dev = [
     "pytest-cov>=7.0.0",
     "ruff>=0.14.6",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[project.scripts]
+autoreporeview = "app.__main__:app"
 
 [tool.mypy]
 mypy_path = "app"

@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from services.git_service import GitService
+from app.services.git_service import GitService
 
 
 def test_get_diff(

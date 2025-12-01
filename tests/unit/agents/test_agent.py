@@ -1,5 +1,5 @@
 from unittest.mock import Mock, patch
-from agents.agent import Agent
+from app.agents.agent import Agent
 
 
 def test_invoke_returns_string(agent: Agent) -> None:

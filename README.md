@@ -2,8 +2,25 @@
 
 [![codecov](https://codecov.io/gh/AutoRepoReviewITPD/AutoRepoReview/branch/main/graph/badge.svg)](https://codecov.io/gh/AutoRepoReviewITPD/AutoRepoReview)
 
-
 AI-powered git repository change analysis
+
+## Quick Start
+
+1. **Install [uv](https://docs.astral.sh/uv/getting-started/installation/)** (if you don't have it)
+
+2. **Run AutoRepoReview** directly from GitHub:
+   ```bash
+   uvx --from git+https://github.com/AutoRepoReviewITPD/AutoRepoReview autoreporeview summary <commit_a> <commit_b>
+   ```
+
+That's it! Have fun.
+
+### Local Development
+
+For development, clone the repository and run:
+```bash
+uv run autoreporeview summary <commit_a> <commit_b>
+```
 
 ## Project Goals
 - Automate routine review of repository changes
@@ -73,10 +90,3 @@ flowchart TD
 **[View Documentation Site](https://AutoRepoReviewITPD.github.io/AutoRepoReview/)** with sprint reports, meeting notes, and project documentation.
 - `./docs/sprints` — Contains scripts, meeting notes, sprint reports, and other iterative documentation reflecting project progress.
 - `./docs/ai-usage.md` — Details how AI tools have been used within the project.
-
-## How to run prototype
-
-1. Go to `prototype` directory
-2. Install uv if you don't have it yet - https://docs.astral.sh/uv/getting-started/installation/
-3. Run `uv run main.py <commit_a> <commit_b>`
-

@@ -1,7 +1,7 @@
 # Link: https://github.com/AutoRepoReviewITPD/AutoRepoReview/blob/main/docs/requirements/quality-requirements.md#qast001-1
 
 import time
-import main
+from app import __main__ as main
 
 
 def test_qas001_1(
