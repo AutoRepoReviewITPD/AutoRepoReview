@@ -1,9 +1,9 @@
 from unittest.mock import Mock
 import pytest
 
-from agents.agent import Agent
-from services.git_service import GitService
-from services.summarize_service import SummarizeService
+from app.agents.agent import Agent
+from app.services.git_service import GitService
+from app.services.summarize_service import SummarizeService
 from langchain_core.language_models import LanguageModelLike
 
 

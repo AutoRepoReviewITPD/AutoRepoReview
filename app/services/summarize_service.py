@@ -1,5 +1,5 @@
-from agents.agent import Agent
-from models.gigachat import llm
+from ..agents.agent import Agent
+from ..models.gigachat import llm
 
 
 class SummarizeService:

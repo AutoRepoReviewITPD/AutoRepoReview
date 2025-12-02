@@ -1,7 +1,7 @@
 import typer
 
-from services.git_service import GitService
-from services.summarize_service import SummarizeService
+from .services.git_service import GitService
+from .services.summarize_service import SummarizeService
 
 app = typer.Typer()
 

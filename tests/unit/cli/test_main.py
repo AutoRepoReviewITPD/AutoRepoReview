@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from pytest import CaptureFixture
 
-import main
+from app import __main__ as main
 
 
 def test_summary_function_prints_changes(capsys: CaptureFixture[str]) -> None:

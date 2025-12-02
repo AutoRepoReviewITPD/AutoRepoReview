@@ -1,6 +1,6 @@
 from unittest.mock import patch
 from uuid import uuid4
-from services.summarize_service import SummarizeService
+from app.services.summarize_service import SummarizeService
 
 
 def test_formulating_prompt(

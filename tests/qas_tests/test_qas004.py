@@ -1,6 +1,6 @@
 # Link: https://github.com/AutoRepoReviewITPD/AutoRepoReview/blob/main/docs/requirements/quality-requirements.md#qast004-1
 
-import main
+from app import __main__ as main
 
 
 def test_qas004_1(
