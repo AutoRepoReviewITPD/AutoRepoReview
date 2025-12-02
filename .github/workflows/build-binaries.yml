@@ -56,13 +56,19 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       
-      - name: Create Release
+      - name: Create or Update Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
           name: Release ${{ steps.tag_version.outputs.version }}
           body: |
             ## AutoRepoReview ${{ steps.tag_version.outputs.version }}
+            
+            ### PyPI Package
+            Install from PyPI:
+            ```bash
+            pip install autoreporeview==${{ steps.tag_version.outputs.version }}
+            ```
             
             ### Downloads
             - **Windows**: `autoreporeview.exe`
@@ -72,10 +78,11 @@ jobs:
             ### Installation
             1. Download the binary for your platform
             2. Make it executable (Linux/macOS): `chmod +x autoreporeview`
-            3. Run: `./autoreporeview summary <commit_a> <commit_b>`
+            3. Run: `./autoreporeview summary <path> <commit_a> <commit_b>`
           files: |
             release-artifacts/**/*
           draft: false
           prerelease: false
+          update: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

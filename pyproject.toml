@@ -1,9 +1,23 @@
 [project]
 name = "autoreporeview"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI-powered git repository change analysis tool"
 readme = "README.md"
 requires-python = ">=3.13"
+license = {text = "MIT"}
+authors = [
+    {name = "AutoRepoReview Team"}
+]
+keywords = ["git", "ai", "code-analysis", "repository-review", "diff-summary"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Software Development :: Quality Assurance",
+]
 dependencies = [
     "langchain>=0.3.27",
     "langchain-gigachat>=0.3.12",

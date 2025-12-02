@@ -6,7 +6,17 @@ AI-powered git repository change analysis
 
 ## Quick Start
 
-### Option 1: Download Pre-built Binary (Recommended)
+### Option 1: Run via uvx (Recommended)
+
+If you have [uv](https://docs.astral.sh/uv/getting-started/installation/) installed, you can run AutoRepoReview directly:
+
+```bash
+uvx autoreporeview summary <path> <commit_a> <commit_b>
+```
+
+This will automatically download and run the latest version from PyPI.
+
+### Option 2: Download Pre-built Binary
 
 1. **Download the latest release** from [GitHub Releases](https://github.com/AutoRepoReviewITPD/AutoRepoReview/releases)
    - **Windows**: Download `autoreporeview.exe`
@@ -21,42 +31,132 @@ AI-powered git repository change analysis
 3. **Run AutoRepoReview**:
    ```bash
    # Windows
-   .\autoreporeview.exe summary <commit_a> <commit_b>
+   .\autoreporeview.exe summary <path> <commit_a> <commit_b>
    
    # Linux/macOS
-   ./autoreporeview summary <commit_a> <commit_b>
+   ./autoreporeview summary <path> <commit_a> <commit_b>
    ```
 
-### Option 2: Run from Source
+### Option 3: Run from GitHub Sources via uvx
 
-1. **Install [uv](https://docs.astral.sh/uv/getting-started/installation/)** (if you don't have it)
+Run AutoRepoReview directly from GitHub sources using uvx:
 
-2. **Run AutoRepoReview** directly from GitHub:
+```bash
+uvx --from git+https://github.com/AutoRepoReviewITPD/AutoRepoReview autoreporeview summary <path> <commit_a> <commit_b>
+```
+
+This builds and runs the tool from the latest GitHub sources.
+
+### Option 4: Clone and Run Locally
+
+1. **Clone the repository**:
    ```bash
-   uvx --from git+https://github.com/AutoRepoReviewITPD/AutoRepoReview autoreporeview summary <commit_a> <commit_b>
+   git clone https://github.com/AutoRepoReviewITPD/AutoRepoReview.git
+   cd AutoRepoReview
+   ```
+
+2. **Install [uv](https://docs.astral.sh/uv/getting-started/installation/)** (if you don't have it)
+
+3. **Run AutoRepoReview**:
+   ```bash
+   # Make the script executable (Linux/macOS)
+   chmod +x autoreporeview
+   
+   # Run directly
+   ./autoreporeview summary <path> <commit_a> <commit_b>
+   
+   # Or using uv run
+   uv run autoreporeview summary <path> <commit_a> <commit_b>
    ```
 
 That's it! Have fun.
 
-### Local Development
+## Releases and Builds
 
-For development, clone the repository and run:
+### Creating a Release
+
+To create a new release with pre-built binaries and publish to PyPI:
+
+1. **Update version in `pyproject.toml`**:
+   ```bash
+   # Update the version field in pyproject.toml
+   # Example: version = "0.1.1"
+   # Or use uv to bump version:
+   uv version 0.1.1
+   ```
+
+2. **Ensure your changes are committed and pushed**:
+   ```bash
+   git add .
+   git commit -m "Your commit message"
+   git push origin main
+   ```
+
+3. **Create and push a version tag**:
+   ```bash
+   # Create a tag (use semantic versioning: vMAJOR.MINOR.PATCH)
+   # Version should match pyproject.toml (with 'v' prefix)
+   git tag v0.1.1
+   
+   # Push the tag to trigger the workflows
+   git push origin v0.1.1
+   ```
+
+4. **Monitor the workflows**:
+   - Go to the [Actions](https://github.com/AutoRepoReviewITPD/AutoRepoReview/actions) tab to see the build progress
+   - The `Build Binaries` workflow will automatically build binaries for Windows, Linux, and macOS
+   - The `Publish to PyPI` workflow will automatically build the package and publish to PyPI
+   - Both workflows will create/update a GitHub Release and attach their artifacts
+   - Once complete, binaries and wheel files will be attached to the release, and the package will be available on PyPI
+
+**Important Notes**: 
+- The tag name must start with `v` followed by a version number (e.g., `v0.1.0`, `v1.2.3`)
+- The version in `pyproject.toml` should match the tag (without the `v` prefix)
+- Both workflows trigger automatically on tag push, so no manual release creation is needed
+- Before first publish to PyPI, you need to enable trusted publishing:
+  1. Go to [PyPI Account Settings](https://pypi.org/manage/account/)
+  2. Navigate to "Publishing" → "Add a pending publisher"
+  3. Add your GitHub repository (e.g., `AutoRepoReviewITPD/AutoRepoReview`)
+  4. Specify the workflow filename: `.github/workflows/publish-pypi.yml`
+  5. Specify the environment: leave empty
+
+### Building Locally
+
+For local development and testing, you can build the package and binaries manually.
+
+#### Building the Package Locally
+
+To build the Python package (wheel and source distribution):
+
 ```bash
-uv run autoreporeview summary <commit_a> <commit_b>
+# Build the package using uv
+uv build --no-sources
 ```
 
-### Building Binaries
+The built packages will be in the `dist/` directory.
+
+**Note**: The `--no-sources` flag ensures the package builds correctly without `tool.uv.sources`, which is recommended when publishing.
+
+After building, you can test installing the package locally:
+
+```bash
+# Install from the built wheel
+pip install dist/autoreporeview-*.whl
+
+# Or install from source distribution
+pip install dist/autoreporeview-*.tar.gz
+```
+
+#### Building Binaries Locally
 
 Build standalone executables for Windows, Linux, and macOS using PyInstaller.
 
-#### Prerequisites
+**Prerequisites**: Install build dependencies:
+```bash
+uv sync --group dev
+```
 
-1. Install build dependencies:
-   ```bash
-   uv sync --group dev
-   ```
-
-#### Building for Current Platform
+**Building for Current Platform**:
 
 Build a binary for your current operating system:
 ```bash
@@ -67,71 +167,32 @@ The binary will be created in the `dist/` directory:
 - **Windows**: `dist/autoreporeview.exe`
 - **Linux/macOS**: `dist/autoreporeview`
 
-#### Cross-Platform Building
+After building, test the binary:
+```bash
+# Windows
+.\dist\autoreporeview.exe summary <path> <commit_a> <commit_b>
+
+# Linux/macOS
+./dist/autoreporeview summary <path> <commit_a> <commit_b>
+```
+
+**Cross-Platform Building**:
 
 PyInstaller doesn't support cross-compilation. To build binaries for other platforms:
 
-1. **Using GitHub Actions** (Recommended):
-   - Push a version tag (e.g., `v0.1.0`) to trigger automated builds and create a release:
-   ```bash
-   # Create and push a version tag
-   git tag v0.1.0
-   git push origin v0.1.0
-   ```
-   - Binaries for Windows, Linux, and macOS will be automatically built and attached to a GitHub Release
-   - The release will be available at [GitHub Releases](https://github.com/AutoRepoReviewITPD/AutoRepoReview/releases)
-
-2. **Using Docker** (for Linux builds on Windows/macOS):
+1. **Using Docker** (for Linux builds on Windows/macOS):
    ```bash
    docker run --rm -v "$(pwd):/src" python:3.13 bash -c "cd /src && pip install uv && uv sync --group dev && uv run pyinstaller --clean --name autoreporeview --onefile autoreporeview_cli.py"
    ```
 
-3. **Using WSL** (for Linux builds on Windows):
+2. **Using WSL** (for Linux builds on Windows):
    - Install WSL and Ubuntu
    - Follow the Linux build instructions inside WSL
 
-4. **Native builds**:
+3. **Native builds**:
    - Build Windows binaries on Windows
    - Build Linux binaries on Linux
    - Build macOS binaries on macOS
-
-#### Testing the Binary
-
-After building, test the binary:
-```bash
-# Windows
-.\dist\autoreporeview.exe summary <commit_a> <commit_b>
-
-# Linux/macOS
-./dist/autoreporeview summary <commit_a> <commit_b>
-```
-
-### Creating a Release
-
-To create a new release with pre-built binaries for all platforms:
-
-1. **Ensure your changes are committed and pushed**:
-   ```bash
-   git add .
-   git commit -m "Your commit message"
-   git push origin main
-   ```
-
-2. **Create and push a version tag**:
-   ```bash
-   # Create a tag (use semantic versioning: vMAJOR.MINOR.PATCH)
-   git tag v0.1.0
-   
-   # Push the tag to trigger the release workflow
-   git push origin v0.1.0
-   ```
-
-3. **Monitor the workflow**:
-   - Go to the [Actions](https://github.com/AutoRepoReviewITPD/AutoRepoReview/actions) tab to see the build progress
-   - Once complete, the release will appear in [Releases](https://github.com/AutoRepoReviewITPD/AutoRepoReview/releases)
-   - All three platform binaries will be attached to the release
-
-**Note**: The tag name must start with `v` followed by a version number (e.g., `v0.1.0`, `v1.2.3`).
 
 ## Project Goals
 - Automate routine review of repository changes
