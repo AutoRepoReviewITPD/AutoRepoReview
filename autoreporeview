@@ -1,0 +1,5 @@
+#!/bin/bash
+
+uv sync
+uv run app/main.py $1 $2 $3
+
