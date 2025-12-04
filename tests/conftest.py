@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 import pytest
 
 from app.agents.agent import Agent
@@ -9,7 +9,11 @@ from langchain_core.language_models import LanguageModelLike
 
 @pytest.fixture(scope="session")
 def summarize_service() -> SummarizeService:
-    return SummarizeService()
+    mock_llm = Mock(spec=LanguageModelLike)
+    with patch(
+        "app.services.summarize_service.LLMFactory.create_llm", return_value=mock_llm
+    ):
+        return SummarizeService()
 
 
 @pytest.fixture(scope="session", autouse=True)
