@@ -1,6 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
+from pydantic import SecretStr
 
 from app.models.llm_factory import LLMFactory
 
@@ -97,7 +98,7 @@ def test_create_llm_creates_openai_model(mock_chat_openai: Mock) -> None:
 
     mock_chat_openai.assert_called_once_with(
         model="gpt-4",
-        api_key="test-key",
+        api_key=SecretStr("test-key"),
         base_url="https://api.openai.com/v1",
     )
 
@@ -116,7 +117,7 @@ def test_create_llm_creates_openai_with_default_model(mock_chat_openai: Mock) ->
 
     mock_chat_openai.assert_called_once_with(
         model="gpt-4",
-        api_key="test-key",
+        api_key=SecretStr("test-key"),
         base_url="https://api.openai.com/v1",
     )
 
@@ -135,7 +136,7 @@ def test_create_llm_creates_openai_for_custom_url(mock_chat_openai: Mock) -> Non
 
     mock_chat_openai.assert_called_once_with(
         model="custom-model",
-        api_key="test-key",
+        api_key=SecretStr("test-key"),
         base_url="https://custom-api.example.com/v1",
     )
 
