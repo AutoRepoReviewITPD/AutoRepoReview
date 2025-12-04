@@ -45,13 +45,15 @@ def test_summarize(
     assert len(summary) > 0
 
 
-def test_summarize_handles_connection_error(summarize_service: SummarizeService) -> None:
+def test_summarize_handles_connection_error(
+    summarize_service: SummarizeService,
+) -> None:
     """Test that APIConnectionError is converted to ConnectionError."""
     diff = "test diff"
-    
+
     class APIConnectionError(Exception):
         pass
-    
+
     connection_error = APIConnectionError("Failed to connect")
 
     with patch.object(
@@ -61,18 +63,20 @@ def test_summarize_handles_connection_error(summarize_service: SummarizeService)
     ):
         with pytest.raises(ConnectionError) as exc_info:
             summarize_service.summarize(diff)
-        
+
         assert "Failed to connect to API" in str(exc_info.value)
         assert "API URL is correct" in str(exc_info.value)
 
 
-def test_summarize_handles_connection_error_by_type_name(summarize_service: SummarizeService) -> None:
+def test_summarize_handles_connection_error_by_type_name(
+    summarize_service: SummarizeService,
+) -> None:
     """Test that exceptions with 'Connection' in type name are converted to ConnectionError."""
     diff = "test diff"
-    
+
     class ConnectionTimeoutError(Exception):
         pass
-    
+
     connection_error = ConnectionTimeoutError("Connection failed")
 
     with patch.object(
@@ -82,17 +86,19 @@ def test_summarize_handles_connection_error_by_type_name(summarize_service: Summ
     ):
         with pytest.raises(ConnectionError) as exc_info:
             summarize_service.summarize(diff)
-        
+
         assert "Failed to connect to API" in str(exc_info.value)
 
 
-def test_summarize_handles_authentication_error(summarize_service: SummarizeService) -> None:
+def test_summarize_handles_authentication_error(
+    summarize_service: SummarizeService,
+) -> None:
     """Test that AuthenticationError is converted to ValueError."""
     diff = "test diff"
-    
+
     class AuthenticationError(Exception):
         pass
-    
+
     auth_error = AuthenticationError("Invalid key")
 
     with patch.object(
@@ -102,7 +108,7 @@ def test_summarize_handles_authentication_error(summarize_service: SummarizeServ
     ):
         with pytest.raises(ValueError) as exc_info:
             summarize_service.summarize(diff)
-        
+
         assert "Authentication failed" in str(exc_info.value)
         assert "Use 'configure' command" in str(exc_info.value)
 
@@ -119,7 +125,7 @@ def test_summarize_handles_401_error(summarize_service: SummarizeService) -> Non
     ):
         with pytest.raises(ValueError) as exc_info:
             summarize_service.summarize(diff)
-        
+
         assert "Authentication failed" in str(exc_info.value)
 
 
@@ -135,17 +141,17 @@ def test_summarize_handles_403_error(summarize_service: SummarizeService) -> Non
     ):
         with pytest.raises(ValueError) as exc_info:
             summarize_service.summarize(diff)
-        
+
         assert "Authentication failed" in str(exc_info.value)
 
 
 def test_summarize_handles_api_error(summarize_service: SummarizeService) -> None:
     """Test that APIError is converted to RuntimeError."""
     diff = "test diff"
-    
+
     class APIError(Exception):
         pass
-    
+
     api_error = APIError("Bad request")
 
     with patch.object(
@@ -155,7 +161,7 @@ def test_summarize_handles_api_error(summarize_service: SummarizeService) -> Non
     ):
         with pytest.raises(RuntimeError) as exc_info:
             summarize_service.summarize(diff)
-        
+
         assert "API error occurred" in str(exc_info.value)
         assert "API URL and model name are correct" in str(exc_info.value)
 
@@ -172,7 +178,7 @@ def test_summarize_handles_400_error(summarize_service: SummarizeService) -> Non
     ):
         with pytest.raises(RuntimeError) as exc_info:
             summarize_service.summarize(diff)
-        
+
         assert "API error occurred" in str(exc_info.value)
 
 
@@ -188,7 +194,7 @@ def test_summarize_handles_429_error(summarize_service: SummarizeService) -> Non
     ):
         with pytest.raises(RuntimeError) as exc_info:
             summarize_service.summarize(diff)
-        
+
         assert "API error occurred" in str(exc_info.value)
 
 
@@ -218,6 +224,6 @@ def test_summarize_handles_other_errors(summarize_service: SummarizeService) -> 
     ):
         with pytest.raises(RuntimeError) as exc_info:
             summarize_service.summarize(diff)
-        
+
         assert "An error occurred while generating summary" in str(exc_info.value)
         assert "Something went wrong" in str(exc_info.value)
