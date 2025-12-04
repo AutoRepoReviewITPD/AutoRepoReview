@@ -53,14 +53,14 @@ class Config:
         api_url = api_url.strip()
         if not api_url:
             raise ValueError("API URL cannot be empty")
-        
+
         # Remove trailing slashes
         api_url = api_url.rstrip("/")
-        
+
         # Basic URL validation
         if not api_url.startswith(("http://", "https://")):
             raise ValueError(f"Invalid API URL: must start with http:// or https://")
-        
+
         config = {
             "api_url": api_url,
             "model_name": model_name.strip() if model_name else "",
@@ -84,4 +84,3 @@ class Config:
 
 
 config = Config()
-

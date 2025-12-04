@@ -40,4 +40,3 @@ class LLMFactory:
             api_key=api_key,
             base_url=api_url,
         )
-

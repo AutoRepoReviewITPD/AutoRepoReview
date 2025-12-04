@@ -10,7 +10,9 @@ from langchain_core.language_models import LanguageModelLike
 @pytest.fixture(scope="session")
 def summarize_service() -> SummarizeService:
     mock_llm = Mock(spec=LanguageModelLike)
-    with patch("app.services.summarize_service.LLMFactory.create_llm", return_value=mock_llm):
+    with patch(
+        "app.services.summarize_service.LLMFactory.create_llm", return_value=mock_llm
+    ):
         return SummarizeService()
 
 
