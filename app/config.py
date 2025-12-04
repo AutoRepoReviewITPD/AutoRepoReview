@@ -59,7 +59,7 @@ class Config:
 
         # Basic URL validation
         if not api_url.startswith(("http://", "https://")):
-            raise ValueError(f"Invalid API URL: must start with http:// or https://")
+            raise ValueError("Invalid API URL: must start with http:// or https://")
 
         config = {
             "api_url": api_url,
