@@ -21,6 +21,9 @@ class Config:
         """Creates configuration directory if it doesn't exist."""
         self.CONFIG_DIR.mkdir(parents=True, exist_ok=True)
         self.CONFIG_FILE.touch(exist_ok=True)
+        # Set file permissions to owner-only
+        if platform.system() != "Windows":
+            os.chmod(self.CONFIG_FILE, 0o600)
 
     def get_model_config(self) -> Optional[dict[str, str]]:
         """Gets the current model configuration."""
@@ -67,10 +70,6 @@ class Config:
             json.dump(config, f, indent=2)
 
         keyring.set_password(self.SERVICE_NAME, api_url, api_key)
-
-        # Set file permissions to owner-only (doesn't work on Windows)
-        if platform.system() != "Windows":
-            os.chmod(self.CONFIG_FILE, 0o600)
 
     def clear_config(self) -> None:
         """Clears configuration."""

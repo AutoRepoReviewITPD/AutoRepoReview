@@ -9,18 +9,13 @@ from .services.summarize_service import SummarizeService
 app = typer.Typer()
 
 git_service = GitService()
-
-
-def get_summarize_service() -> SummarizeService:
-    """Lazy initialization of summarization service."""
-    return SummarizeService()
+summarize_service = SummarizeService()
 
 
 @app.command()
 def summary(path: str, start_commit: str, end_commit: str) -> None:
     """Creates a summary of changes between two commits."""
     try:
-        summarize_service = get_summarize_service()
         diff = git_service.get_diff(path, start_commit, end_commit)
         print(summarize_service.summarize(diff))
     except ValueError as e:

@@ -1,13 +1,8 @@
-import os
-
-from dotenv import load_dotenv
 from langchain_core.language_models import LanguageModelLike
 from langchain_gigachat.chat_models import GigaChat
 from langchain_openai import ChatOpenAI
 
 from ..config import config
-
-load_dotenv()
 
 
 class LLMFactory:
@@ -15,21 +10,12 @@ class LLMFactory:
 
     @staticmethod
     def create_llm() -> LanguageModelLike:
-        """Creates LLM based on saved configuration or environment variables."""
+        """Creates LLM based on saved configuration."""
         model_config = config.get_model_config()
 
-        # Backward compatibility: check environment variables
         if model_config is None:
-            gigachat_credentials = os.getenv("GIGACHAT_CREDENTIALS")
-            if gigachat_credentials:
-                return GigaChat(
-                    model="GigaChat-2-Max",
-                    credentials=gigachat_credentials,
-                    verify_ssl_certs=False,
-                )
             raise ValueError(
-                "Model is not configured. Use the 'configure' command to set up "
-                "or set the GIGACHAT_CREDENTIALS environment variable."
+                "Model is not configured. Use the 'configure' command to set up."
             )
 
         api_url = model_config["api_url"]
@@ -39,6 +25,14 @@ class LLMFactory:
         if not api_key:
             raise ValueError(
                 "API key not found. Use the 'configure' command to set up."
+            )
+
+        # Determine provider by API URL
+        if "gigachat" in api_url.lower():
+            return GigaChat(
+                model=model_name or "GigaChat-2-Max",
+                credentials=api_key,
+                verify_ssl_certs=False,
             )
 
         return ChatOpenAI(
