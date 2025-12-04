@@ -1,6 +1,7 @@
 from langchain_core.language_models import LanguageModelLike
 from langchain_gigachat.chat_models import GigaChat
 from langchain_openai import ChatOpenAI
+from pydantic import SecretStr
 
 from ..config import config
 
@@ -37,6 +38,6 @@ class LLMFactory:
 
         return ChatOpenAI(
             model=model_name or "gpt-4",
-            api_key=api_key,
+            api_key=SecretStr(api_key),
             base_url=api_url,
         )
