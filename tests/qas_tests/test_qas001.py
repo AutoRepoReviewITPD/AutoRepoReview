@@ -1,9 +1,11 @@
 # Link: https://github.com/AutoRepoReviewITPD/AutoRepoReview/blob/main/docs/requirements/quality-requirements.md#qast001-1
 
+import pytest
 import time
 from app import __main__ as main
 
 
+@pytest.mark.qas
 def test_qas001_1(
     cloned_repo: str,
 ) -> None:
