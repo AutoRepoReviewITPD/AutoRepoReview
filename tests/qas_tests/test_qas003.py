@@ -1,6 +1,7 @@
 # Link: https://github.com/AutoRepoReviewITPD/AutoRepoReview/blob/main/docs/requirements/quality-requirements.md#qast004-1
 
 import subprocess
+import pytest
 
 
 @pytest.mark.qas
