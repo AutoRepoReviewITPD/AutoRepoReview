@@ -34,6 +34,8 @@ jobs:
       
       - name: Publish to PyPI
         run: uv publish
+        env:
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
       
       - name: Upload wheel to release
         uses: softprops/action-gh-release@v2
