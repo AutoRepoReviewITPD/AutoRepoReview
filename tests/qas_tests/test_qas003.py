@@ -5,7 +5,7 @@ import pytest
 
 
 @pytest.mark.qas
-def test_qas004_1() -> None:
+def test_qas003_1() -> None:
     result = subprocess.run(
         ["uv", "run", "pytest", "--cov=app", "tests/unit", "--cov-fail-under=80"]
     )
