@@ -6,7 +6,6 @@ from app import __main__ as main
 
 
 @pytest.mark.skip("Test is expensive")
-@pytest.mark.qas
 def test_qas001_1(
     cloned_repo: str,
 ) -> None:
