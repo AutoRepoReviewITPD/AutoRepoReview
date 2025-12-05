@@ -1,11 +1,12 @@
 # Link: https://github.com/AutoRepoReviewITPD/AutoRepoReview/blob/main/docs/requirements/quality-requirements.md#qast004-1
 
+import subprocess
 import pytest
-from app import __main__ as main
 
 
 @pytest.mark.qas
-def test_qas004_1(
-    cloned_repo: str,
-) -> None:
-    main.summary(cloned_repo, "HEAD", "HEAD~1")
+def test_qas004_1() -> None:
+    result = subprocess.run(
+        ["uv", "run", "pytest", "--cov=app", "tests/unit", "--cov-fail-under=80"]
+    )
+    assert result.returncode == 0
