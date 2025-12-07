@@ -18,17 +18,14 @@ exporters:
   prometheus:
     endpoint: "0.0.0.0:8889"
     namespace: autoreporeview
-  otlp/tempo:
-    endpoint: tempo:4317
-    tls:
-      insecure: true
-  # Grafana Cloud exporter - Uncomment and configure with your credentials
-  # otlp/grafana-cloud:
-  #   endpoint: https://otlp-gateway-prod-us-central-0.grafana.net/otlp
-  #   headers:
-  #     authorization: "Basic YOUR_BASE64_ENCODED_AUTH_HERE"
+  # otlp/tempo:
+  #   endpoint: tempo:4317
   #   tls:
-  #     insecure: false
+  #     insecure: true
+  otlphttp/grafana-cloud:
+    endpoint: https://otlp-gateway-prod-me-central-1.grafana.net/otlp
+    headers:
+      Authorization: "Basic {AUTH}"
   debug:
     verbosity: normal
 
@@ -37,7 +34,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [otlp/tempo, debug]  # Add otlp/grafana-cloud here after configuring
+      exporters: [otlphttp/grafana-cloud, debug]  # Add otlp/grafana-cloud here after configuring
     metrics:
       receivers: [otlp]
       processors: [memory_limiter, batch]
