@@ -52,7 +52,18 @@ NSM: Number of successful diff summaries per active user session
 
 ## What Data We Collect
 
-To calculate these metrics and understand customer intent, the system will collect the following analytics data for each relevant CLI invocation:  
+### Currently Collected Metrics
+
+At present, the system collects only the following metrics for each LLM interaction:
+
+- **LLM input length** — Length of the request sent to the LLM
+- **LLM output length** — Length of the response received from the LLM
+
+These metrics are collected to monitor token usage and understand basic interaction patterns.
+
+### Planned Future Metrics
+
+To calculate the metrics described above and understand customer intent, the system will collect the following analytics data for each relevant CLI invocation (planned for future implementation):  
 
 - Command-level data:  
   - Command name and subcommand 
@@ -72,9 +83,9 @@ To calculate these metrics and understand customer intent, the system will colle
 
 Sensitive repository content (diff body, code, commit messages, raw prompts) will not be stored in analytics. Only high-level metadata will be recorded.
 
-## Measurement Approach and Pipeline
+## Measurement Approach and Pipeline (Planned)
 
-To support analytics, the system will be instrumented using OpenTelemetry for metrics and events.
+To support analytics, the system will be instrumented using OpenTelemetry for metrics and events (planned for future implementation).
 
 - Instrumentation points:  
   - At CLI command parsing: record command name and session id
