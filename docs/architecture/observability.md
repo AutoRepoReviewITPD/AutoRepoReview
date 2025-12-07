@@ -86,10 +86,8 @@ The following telemetry collection pipeline is planned for future implementation
 
 AutoRepoReview will use OpenTelemetry to collect metrics, logs, and traces. Data will flow through a simple pipeline:
 
-1. **CLI** emits metrics/traces/logs during execution.
-2. **OpenTelemetry SDK** collects the data.
-3. Data is exported using **OTLP**.
-4. Backend tools such as **Grafana Cloud** store and visualize telemetry.
+<img width="1407" height="112" alt="image" src="https://github.com/user-attachments/assets/39390ad0-36c1-454c-93a6-324a989b5759" />
+
 
 ## Alerting Strategy (Planned)
 
