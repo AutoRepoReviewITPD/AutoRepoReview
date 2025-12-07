@@ -136,3 +136,9 @@ When alerts are triggered, maintainers are notified via dashboard. First respons
    * Patch the issue
 
 This keeps the tool stable and reduces user frustration during outages.
+
+## Example
+
+![alt text](observability.png)
+
+Link: https://ilnarkhasanov.grafana.net/explore?schemaVersion=1&panes=%7B%22upg%22:%7B%22datasource%22:%22grafanacloud-traces%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22grafanacloud-traces%22%7D,%22queryType%22:%22traceqlSearch%22,%22limit%22:20,%22tableType%22:%22traces%22,%22metricsQueryType%22:%22range%22,%22serviceMapUseNativeHistograms%22:false,%22query%22:%22%7B%7D%22,%22filters%22:%5B%7B%22id%22:%223d24f1aa%22,%22operator%22:%22%3D%22,%22scope%22:%22span%22%7D%5D%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D,%22compact%22:false%7D,%227rh%22:%7B%22datasource%22:%22grafanacloud-traces%22,%22queries%22:%5B%7B%22query%22:%22d2cf816a2d5e45308a372a5dbd2ff0f3%22,%22queryType%22:%22traceql%22,%22datasource%22:%7B%22uid%22:%22grafanacloud-traces%22%7D,%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%221765134823430%22,%22to%22:%221765138423430%22%7D,%22panelsState%22:%7B%22trace%22:%7B%22spanId%22:%22e1603867ee8a0189%22,%22spanFilters%22:%7B%22spanNameOperator%22:%22%3D%22,%22serviceNameOperator%22:%22%3D%22,%22fromOperator%22:%22%3E%22,%22toOperator%22:%22%3C%22,%22tags%22:%5B%7B%22id%22:%226fca44fc-ba5%22,%22operator%22:%22%3D%22%7D%5D%7D%7D%7D,%22compact%22:true%7D%7D&orgId=1
