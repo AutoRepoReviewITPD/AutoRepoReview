@@ -23,3 +23,11 @@ For the connection to the LLM model we decided to use LangChain (https://www.lan
 ### Pytest
 
 [Pytest](https://docs.pytest.org/en/stable/) was chosed for its easiness to use and fixtures functionality.
+
+## Analytics
+
+We use Grafana since this instrument allows to easily do the analytics for any application.
+
+### Observability
+
+We use OpenTelemetry since this is powerful tool that also is easy to install. Specifically, now we can see which methods take the time.
