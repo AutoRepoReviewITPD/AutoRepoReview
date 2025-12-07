@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),  
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-12-07_
+
+### Added
+
+- Added functionality for cutomized LLM use, clients can now connect their personal LLM tokens to use their desired LLM. GigaChat was kept as the standard choice
+
+
 ## _Sprint-3: 22-11-2025_
 
 ### Added

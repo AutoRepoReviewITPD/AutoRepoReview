@@ -28,3 +28,14 @@ We used AI tools for:
 - Comparing summaries from experiments with and without repository URL context
 - Writing methodology section for context impact experiment
 - Analyzing and documenting results and conclusions from diff summary quality experiments
+
+## Sprint 4
+
+- Formatting and summarizing meeting notes
+- Providing tips on which features can improve customer experience
+
+## Sprint 5
+
+- Guidance and notes on how to do the spring grooming
+- Providing assistance with developing and testing the new features supported (in particular, changing the LLM used for the primary service).
+
