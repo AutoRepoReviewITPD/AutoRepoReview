@@ -50,6 +50,8 @@ NSM: Number of successful diff summaries per active user session
   * user dissatisfaction (immediate re-run)
 * This minimizes the unintended side effects (outputting poor summaries) of focusing on success metrics
 
+<img width="832" height="396" alt="image" src="https://github.com/user-attachments/assets/872e647d-3216-4a86-93a1-90895b050c3b" />
+
 ## What Data We Collect
 
 ### Currently Collected Metrics
@@ -91,6 +93,8 @@ To support analytics, the system will be instrumented using OpenTelemetry for me
   - At CLI command parsing: record command name and session id
   - At summary flow start/end: record start timestamp, end timestamp, outcome (success/error/re-run)
   - At error handling: record error type and code
+
+<img width="1407" height="112" alt="image" src="https://github.com/user-attachments/assets/a27b90ef-f3ad-4bde-94a1-a88702671bd9" />
 
 ## Planned Analytics Experiments
 
