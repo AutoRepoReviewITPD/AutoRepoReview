@@ -1,10 +1,17 @@
 import getpass
 
 import typer
+from opentelemetry import trace
 
 from .config import config
 from .services.git_service import GitService
 from .services.summarize_service import SummarizeService
+from .telemetry import setup_telemetry
+
+# Initialize telemetry
+setup_telemetry()
+
+tracer = trace.get_tracer(__name__)
 
 app = typer.Typer()
 
@@ -14,22 +21,32 @@ git_service = GitService()
 @app.command()
 def summary(path: str, start_commit: str, end_commit: str) -> None:
     """Creates a summary of changes between two commits."""
-    summarize_service = SummarizeService()
-    try:
-        diff = git_service.get_diff(path, start_commit, end_commit)
-        print(summarize_service.summarize(diff))
-    except ValueError as e:
-        typer.echo(f"Configuration error: {e}", err=True)
-        raise typer.Exit(1)
-    except ConnectionError as e:
-        typer.echo(f"Connection error: {e}", err=True)
-        raise typer.Exit(1)
-    except RuntimeError as e:
-        typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(1)
-    except Exception as e:
-        typer.echo(f"Unexpected error: {e}", err=True)
-        raise typer.Exit(1)
+    with tracer.start_as_current_span("summary_command") as span:
+        span.set_attribute("path", path)
+        span.set_attribute("start_commit", start_commit)
+        span.set_attribute("end_commit", end_commit)
+
+        summarize_service = SummarizeService()
+        try:
+            with tracer.start_as_current_span("get_diff"):
+                diff = git_service.get_diff(path, start_commit, end_commit)
+
+            with tracer.start_as_current_span("summarize"):
+                result = summarize_service.summarize(diff)
+                print(result)
+                span.set_attribute("summary_length", len(result))
+        except ValueError as e:
+            typer.echo(f"Configuration error: {e}", err=True)
+            raise typer.Exit(1)
+        except ConnectionError as e:
+            typer.echo(f"Connection error: {e}", err=True)
+            raise typer.Exit(1)
+        except RuntimeError as e:
+            typer.echo(f"Error: {e}", err=True)
+            raise typer.Exit(1)
+        except Exception as e:
+            typer.echo(f"Unexpected error: {e}", err=True)
+            raise typer.Exit(1)
 
 
 @app.command()

@@ -1,5 +1,9 @@
+from opentelemetry import trace
+
 from ..agents.agent import Agent
 from ..models.llm_factory import LLMFactory
+
+tracer = trace.get_tracer(__name__)
 
 
 class SummarizeService:
@@ -27,44 +31,51 @@ class SummarizeService:
         """
 
     def summarize(self, diff: str) -> str:
-        prompt = self.prepare_prompt(diff)
-        try:
-            return self.agent.invoke(prompt)
-        except Exception as e:
-            error_type = type(e).__name__
-            error_msg = str(e)
+        with tracer.start_as_current_span("summarize_service.summarize") as span:
+            span.set_attribute("diff_length", len(diff))
+            prompt = self.prepare_prompt(diff)
+            try:
+                with tracer.start_as_current_span("agent.invoke"):
+                    result = self.agent.invoke(prompt)
+                    span.set_attribute("result_length", len(result))
+                    return result
+            except Exception as e:
+                error_type = type(e).__name__
+                error_msg = str(e)
 
-            # Extract meaningful error message
-            if "APIConnectionError" in error_type or "Connection" in error_type:
-                raise ConnectionError(
-                    f"Failed to connect to API. Please check:\n"
-                    f"  - Your internet connection\n"
-                    f"  - API URL is correct (use 'show-config' to check)\n"
-                    f"  - API server is accessible\n\n"
-                    f"Error details: {error_msg}"
-                ) from None
-            elif (
-                "AuthenticationError" in error_type
-                or "401" in error_msg
-                or "403" in error_msg
-            ):
-                raise ValueError(
-                    f"Authentication failed. Please check your API key.\n"
-                    f"Use 'configure' command to update your API key.\n\n"
-                    f"Error details: {error_msg}"
-                ) from None
-            elif "APIError" in error_type or "400" in error_msg or "429" in error_msg:
-                raise RuntimeError(
-                    f"API error occurred. Please check:\n"
-                    f"  - API URL and model name are correct\n"
-                    f"  - You have sufficient API credits/quota\n"
-                    f"  - The model name is valid for your API provider\n\n"
-                    f"Error details: {error_msg}"
-                ) from None
-            elif isinstance(e, ValueError):
-                raise
-            else:
-                # For any other error, show a clean message
-                raise RuntimeError(
-                    f"An error occurred while generating summary: {error_msg}"
-                ) from None
+                # Extract meaningful error message
+                if "APIConnectionError" in error_type or "Connection" in error_type:
+                    raise ConnectionError(
+                        f"Failed to connect to API. Please check:\n"
+                        f"  - Your internet connection\n"
+                        f"  - API URL is correct (use 'show-config' to check)\n"
+                        f"  - API server is accessible\n\n"
+                        f"Error details: {error_msg}"
+                    ) from None
+                elif (
+                    "AuthenticationError" in error_type
+                    or "401" in error_msg
+                    or "403" in error_msg
+                ):
+                    raise ValueError(
+                        f"Authentication failed. Please check your API key.\n"
+                        f"Use 'configure' command to update your API key.\n\n"
+                        f"Error details: {error_msg}"
+                    ) from None
+                elif (
+                    "APIError" in error_type or "400" in error_msg or "429" in error_msg
+                ):
+                    raise RuntimeError(
+                        f"API error occurred. Please check:\n"
+                        f"  - API URL and model name are correct\n"
+                        f"  - You have sufficient API credits/quota\n"
+                        f"  - The model name is valid for your API provider\n\n"
+                        f"Error details: {error_msg}"
+                    ) from None
+                elif isinstance(e, ValueError):
+                    raise
+                else:
+                    # For any other error, show a clean message
+                    raise RuntimeError(
+                        f"An error occurred while generating summary: {error_msg}"
+                    ) from None
