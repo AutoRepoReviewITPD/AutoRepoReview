@@ -1,7 +1,9 @@
 from opentelemetry import trace
+import tiktoken
 
 from ..agents.agent import Agent
 from ..models.llm_factory import LLMFactory
+from ..config import config
 
 tracer = trace.get_tracer(__name__)
 
@@ -14,26 +16,61 @@ class SummarizeService:
             tools=[],
         )
 
-    def prepare_prompt(self, diff: str) -> str:
-        return f"""
-            Below is the result of running 'git diff A B'. 
-            Please summarize the changes made between these two commits, 
-            focusing on modified files, added or removed lines, 
-            and any significant functional updates or refactorings.
-            Also summarize the changes for each person that contributed.
-                
-            Rules:
-                1. Return only a text with summary
-            
-            -----------
-            {diff}
-            -----------
-        """
+    def prepare_prompt(self, diff: str, contributors_info: str | None = None) -> str:
+        contributors_instruction = ""
+        contributors_format = ""
+        if contributors_info:
+            contributors_instruction = f"""
 
-    def summarize(self, diff: str) -> str:
+**Contributors Information:**
+{contributors_info}
+
+Please include a **Contributors** section in your summary showing who contributed what changes.
+"""
+            contributors_format = (
+                "\n\n**Contributors:**\n- [List contributors and their contributions]"
+            )
+
+        return f"""Analyze the git diff below and provide a concise summary of the changes.
+
+Focus on:
+- Main purpose and high-level changes (what was done and why)
+- Key functional changes (new features, bug fixes, refactorings)
+- Breaking changes or important updates (if any)
+
+Keep it brief and structured. Do NOT list every file or line change - focus on the big picture.
+{contributors_instruction}
+Format the response as:
+**Summary:** [1-2 sentences about the main purpose]
+
+**Key Changes:**
+- [Brief bullet points of important changes]
+
+**Breaking Changes:** [Only if there are any, otherwise omit this section]{contributors_format}
+
+------------
+{diff}
+------------"""
+
+    def get_token_count(self, diff: str, contributors_info: str | None = None) -> int:
+        prompt = self.prepare_prompt(diff, contributors_info)
+
+        model_config = config.get_model_config()
+        model_name = (
+            model_config.get("model_name", "gpt-4") if model_config else "gpt-4"
+        )
+
+        try:
+            encoding = tiktoken.encoding_for_model(model_name)
+            return len(encoding.encode(prompt))
+        except KeyError:
+            encoding = tiktoken.get_encoding("cl100k_base")
+            return len(encoding.encode(prompt))
+
+    def summarize(self, diff: str, contributors_info: str | None = None) -> str:
         with tracer.start_as_current_span("summarize_service.summarize") as span:
             span.set_attribute("diff_length", len(diff))
-            prompt = self.prepare_prompt(diff)
+            prompt = self.prepare_prompt(diff, contributors_info)
             try:
                 with tracer.start_as_current_span("agent.invoke"):
                     result = self.agent.invoke(prompt)

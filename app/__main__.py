@@ -2,6 +2,8 @@ import getpass
 
 import typer
 from opentelemetry import trace
+from rich.console import Console
+from rich.markdown import Markdown
 
 from .config import config
 from .services.git_service import GitService
@@ -14,12 +16,23 @@ setup_telemetry()
 tracer = trace.get_tracer(__name__)
 
 app = typer.Typer()
+console = Console()
 
 git_service = GitService()
 
 
 @app.command()
-def summary(path: str, start_commit: str, end_commit: str) -> None:
+def summary(
+    path: str,
+    start_commit: str,
+    end_commit: str,
+    contributors: bool = typer.Option(
+        False,
+        "--contributors",
+        "-c",
+        help="Include contributors information in the summary",
+    ),
+) -> None:
     """Creates a summary of changes between two commits."""
     with tracer.start_as_current_span("summary_command") as span:
         span.set_attribute("path", path)
@@ -31,9 +44,26 @@ def summary(path: str, start_commit: str, end_commit: str) -> None:
             with tracer.start_as_current_span("get_diff"):
                 diff = git_service.get_diff(path, start_commit, end_commit)
 
-            with tracer.start_as_current_span("summarize"):
-                result = summarize_service.summarize(diff)
-                print(result)
+            contributors_info = None
+            if contributors:
+                contributors_info = git_service.get_contributors(
+                    path, start_commit, end_commit
+                )
+
+            token_count = summarize_service.get_token_count(diff, contributors_info)
+            typer.echo(f"\nEstimated input token count: {token_count}", err=True)
+
+            if not typer.confirm(
+                "Do you want to proceed with summarization?", default=True
+            ):
+                typer.echo("Summarization cancelled by user.", err=True)
+                raise typer.Exit(0)
+
+            with tracer.start_as_current_span("summarize") as summarize_span:
+                summarize_span.set_attribute("token_count", token_count)
+                result = summarize_service.summarize(diff, contributors_info)
+                console.print("\n")
+                console.print(Markdown(result))
                 span.set_attribute("summary_length", len(result))
         except ValueError as e:
             typer.echo(f"Configuration error: {e}", err=True)
