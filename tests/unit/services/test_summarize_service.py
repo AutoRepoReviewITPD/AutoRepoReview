@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from uuid import uuid4
 import pytest
 from app.services.summarize_service import SummarizeService
@@ -12,21 +12,43 @@ def test_formulating_prompt(
 
     assert (
         prompt
-        == f"""
-            Below is the result of running 'git diff A B'. 
-            Please summarize the changes made between these two commits, 
-            focusing on modified files, added or removed lines, 
-            and any significant functional updates or refactorings.
-            Also summarize the changes for each person that contributed.
-                
-            Rules:
-                1. Return only a text with summary
-            
-            -----------
-            {diff}
-            -----------
-        """
+        == f"""Analyze the git diff below and provide a concise summary of the changes.
+
+Focus on:
+- Main purpose and high-level changes (what was done and why)
+- Key functional changes (new features, bug fixes, refactorings)
+- Breaking changes or important updates (if any)
+
+Keep it brief and structured. Do NOT list every file or line change - focus on the big picture.
+
+Format the response as:
+**Summary:** [1-2 sentences about the main purpose]
+
+**Key Changes:**
+- [Brief bullet points of important changes]
+
+**Breaking Changes:** [Only if there are any, otherwise omit this section]
+
+------------
+{diff}
+------------"""
     ), prompt
+
+
+def test_prepare_prompt_with_contributors_info(
+    summarize_service: SummarizeService,
+) -> None:
+    """Test that prepare_prompt includes contributors information when provided."""
+    diff = str(uuid4())
+    contributors_info = "- Alice: 2 commit(s)\n- Bob: 1 commit(s)"
+    prompt = summarize_service.prepare_prompt(diff, contributors_info)
+
+    assert "**Contributors Information:**" in prompt
+    assert contributors_info in prompt
+    assert "Please include a **Contributors** section" in prompt
+    assert "**Contributors:**" in prompt
+    assert "- [List contributors and their contributions]" in prompt
+    assert diff in prompt
 
 
 def test_summarize(
@@ -43,6 +65,127 @@ def test_summarize(
 
     assert isinstance(summary, str)
     assert len(summary) > 0
+
+
+def test_get_token_count_with_valid_model(
+    summarize_service: SummarizeService,
+) -> None:
+    """Test get_token_count with a valid model name."""
+    diff = "test diff content"
+    with patch(
+        "app.services.summarize_service.config.get_model_config"
+    ) as mock_get_config:
+        mock_get_config.return_value = {"model_name": "gpt-4"}
+        with patch(
+            "app.services.summarize_service.tiktoken.encoding_for_model"
+        ) as mock_encoding:
+            mock_encoder = Mock()
+            mock_encoder.encode.return_value = [1, 2, 3, 4, 5]
+            mock_encoding.return_value = mock_encoder
+
+            token_count = summarize_service.get_token_count(diff)
+
+            assert token_count == 5
+            mock_get_config.assert_called_once()
+            mock_encoding.assert_called_once_with("gpt-4")
+            mock_encoder.encode.assert_called_once()
+
+
+def test_get_token_count_with_default_model(
+    summarize_service: SummarizeService,
+) -> None:
+    """Test get_token_count uses default model when config is None."""
+    diff = "test diff content"
+    with patch(
+        "app.services.summarize_service.config.get_model_config"
+    ) as mock_get_config:
+        mock_get_config.return_value = None
+        with patch(
+            "app.services.summarize_service.tiktoken.encoding_for_model"
+        ) as mock_encoding:
+            mock_encoder = Mock()
+            mock_encoder.encode.return_value = [1, 2, 3]
+            mock_encoding.return_value = mock_encoder
+
+            token_count = summarize_service.get_token_count(diff)
+
+            assert token_count == 3
+            mock_encoding.assert_called_once_with("gpt-4")
+
+
+def test_get_token_count_with_model_name_in_config(
+    summarize_service: SummarizeService,
+) -> None:
+    """Test get_token_count uses model_name from config when available."""
+    diff = "test diff content"
+    with patch(
+        "app.services.summarize_service.config.get_model_config"
+    ) as mock_get_config:
+        mock_get_config.return_value = {"model_name": "gpt-3.5-turbo"}
+        with patch(
+            "app.services.summarize_service.tiktoken.encoding_for_model"
+        ) as mock_encoding:
+            mock_encoder = Mock()
+            mock_encoder.encode.return_value = [1, 2, 3, 4]
+            mock_encoding.return_value = mock_encoder
+
+            token_count = summarize_service.get_token_count(diff)
+
+            assert token_count == 4
+            mock_encoding.assert_called_once_with("gpt-3.5-turbo")
+
+
+def test_get_token_count_with_contributors_info(
+    summarize_service: SummarizeService,
+) -> None:
+    """Test get_token_count includes contributors_info in prompt."""
+    diff = "test diff"
+    contributors_info = "- Alice: 2 commit(s)"
+    with patch(
+        "app.services.summarize_service.config.get_model_config"
+    ) as mock_get_config:
+        mock_get_config.return_value = {"model_name": "gpt-4"}
+        with patch(
+            "app.services.summarize_service.tiktoken.encoding_for_model"
+        ) as mock_encoding:
+            mock_encoder = Mock()
+            mock_encoder.encode.return_value = [1, 2, 3, 4, 5, 6, 7]
+            mock_encoding.return_value = mock_encoder
+
+            token_count = summarize_service.get_token_count(diff, contributors_info)
+
+            assert token_count == 7
+            # Verify the prompt includes contributors info
+            call_args = mock_encoder.encode.call_args[0][0]
+            assert contributors_info in call_args
+
+
+def test_get_token_count_handles_keyerror_fallback(
+    summarize_service: SummarizeService,
+) -> None:
+    """Test get_token_count falls back to cl100k_base encoding on KeyError."""
+    diff = "test diff content"
+    with patch(
+        "app.services.summarize_service.config.get_model_config"
+    ) as mock_get_config:
+        mock_get_config.return_value = {"model_name": "unknown-model"}
+        with patch(
+            "app.services.summarize_service.tiktoken.encoding_for_model"
+        ) as mock_encoding:
+            mock_encoding.side_effect = KeyError("Unknown model")
+            with patch(
+                "app.services.summarize_service.tiktoken.get_encoding"
+            ) as mock_get_encoding:
+                mock_encoder = Mock()
+                mock_encoder.encode.return_value = [1, 2, 3, 4, 5, 6]
+                mock_get_encoding.return_value = mock_encoder
+
+                token_count = summarize_service.get_token_count(diff)
+
+                assert token_count == 6
+                mock_encoding.assert_called_once_with("unknown-model")
+                mock_get_encoding.assert_called_once_with("cl100k_base")
+                mock_encoder.encode.assert_called_once()
 
 
 def test_summarize_handles_connection_error(

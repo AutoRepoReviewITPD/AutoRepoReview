@@ -19,7 +19,7 @@ class GitService:
         if not output.strip():
             return ""
 
-        contributors = {}
+        contributors: dict[str, list[str]] = {}
         for line in output.strip().split("\n"):
             if "|" in line:
                 author, message = line.split("|", 1)
