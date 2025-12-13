@@ -26,6 +26,7 @@ Success = CLI tool that:
 2. Fetches diff
 3. Returns a summary in <60 seconds
 4. Works on Linux/macOS via `pip install`
+5. Diff can be taken either by providing 2 commits, or by specifying time range.
 
 ---
 
@@ -35,6 +36,7 @@ Success = CLI tool that:
 - [x] Fetch commit diff via GitHub API
 - [x] Basic prompt engineering for LLM summarization
 - [x] CLI command: `autoreporeview summarize <commit-url>`
+- [x] Unit tests for diff parsing and CLI
 
 ### In Progress
 - [ ] Improve summary clarity (change type, impact, components)
@@ -44,7 +46,6 @@ Success = CLI tool that:
 ### Planned (MVP Scope)
 - [ ] Config file for API keys and model selection
 - [ ] Output formatting: plain text + optional JSON
-- [ ] Unit tests for diff parsing and CLI
 
 ### Future (Post-MVP)
 - [ ] Multi-file commit support
@@ -87,4 +88,4 @@ We track progress weekly using:
 
 ---
 
-*Last updated: November 08, 2025*
+*Last updated: December 13, 2025*
