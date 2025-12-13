@@ -1,21 +1,23 @@
-# Sprint 6 meeting script
+# Meeting Script
 
-## Last meeting requests
+## Prepared Questions
 
-Main requirement of the customer was to show the contributors in the summary report.
+- What is your feedback on the improved summary output and token estimation feature?
 
-## Prospect of the meeting
+- What do you suggest for seeing contributors (who made the changes) in the summary?
 
-Main points we would like to discuss with customer are the following:
-- Output format
-- Specifiying the contributors in the output
-- Negotiating on additional investor report to review other teams Git repositories
+- How do you suggest to make the CLI more friendly? (Impelementing date ranges)
 
-## New customer's requests 
+- How valuable would intent-based summaries be (e.g., only new features, only breaking changes, only documentation)?
 
-New main requirement of the customer was to integrate a feature of getting summary not for commit A and commit B, but using the time ranges (for example, summary for the last week)
+- Is there anything we should focus on to improve previous weeks’ grades?
 
-## Further steps:
-1. Integrate a feature of getting the summary for a time range
-2. Do the investor report on doing the summary for repositories of other teams on the course
+## Taken Down Notes
 
+Summary improvement: Contributor should be mentioned directly in the summary
+
+Specify range of dates instead of commit hashes and then we get the commits in the range for example (between date-1 and date-2)
+
+Mainly for next week: make the CLI more friendly (using a range of dates instead of copying the hashes).
+
+For more points: define use cases for our tool to create the investor report about another team
