@@ -22,6 +22,8 @@ One the main high-impact goals in the previous meeting was the following: Implem
 
 1. Add a feature with time-bound summary
 
+2. Show contributores in the summary
+
 ### Medium
 
 1. Enhance observability and analytics

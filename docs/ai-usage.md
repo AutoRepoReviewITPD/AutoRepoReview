@@ -1,6 +1,6 @@
 # AI Usage Report
 
-We used AI tools for:
+We used AI tools (Primarily ChatGPT) for:
 
 ## Sprint 0
 
@@ -39,3 +39,9 @@ We used AI tools for:
 - Guidance and notes on how to do the spring grooming
 - Providing assistance with developing and testing the new features supported (in particular, changing the LLM used for the primary service).
 
+## Sprint 6
+
+- Guidance how to improve product backlog
+- Assistance in token logs implementation
+- Summarizing the meeting transcript
+- Formatting the written texts
