@@ -1,3 +1,4 @@
+from datetime import datetime
 import getpass
 
 import typer
@@ -46,7 +47,7 @@ def summary(
 
             contributors_info = None
             if contributors:
-                contributors_info = git_service.get_contributors(
+                contributors_info = git_service.get_contributors_by_commits(
                     path, start_commit, end_commit
                 )
 
@@ -77,6 +78,40 @@ def summary(
         except Exception as e:
             typer.echo(f"Unexpected error: {e}", err=True)
             raise typer.Exit(1)
+
+
+@app.command()
+def summary_by_time(
+    path: str,
+    start_time: datetime,
+    end_time: datetime,
+    contributors: bool = typer.Option(
+        False,
+        "--contributors",
+        "-c",
+        help="Include contributors information in the summary",
+    ),
+) -> None:
+    diff = git_service.get_diff_by_time(path, start_time, end_time)
+
+    contributors_info = None
+    if contributors:
+        contributors_info = git_service.get_contributors_by_time(
+            path, start_time, end_time
+        )
+
+    summarize_service = SummarizeService()
+
+    token_count = summarize_service.get_token_count(diff, contributors_info)
+    typer.echo(f"\nEstimated input token count: {token_count}", err=True)
+
+    if not typer.confirm("Do you want to proceed with summarization?", default=True):
+        typer.echo("Summarization cancelled by user.", err=True)
+        raise typer.Exit(0)
+
+    result = summarize_service.summarize(diff, contributors_info)
+    console.print("\n")
+    console.print(Markdown(result))
 
 
 @app.command()
