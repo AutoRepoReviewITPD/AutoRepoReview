@@ -45,7 +45,7 @@ def test_summary_with_contributors_calls_get_contributors(
     mock_summarize_service.get_token_count.return_value = 150
     mock_git_service = Mock()
     mock_git_service.get_diff.return_value = "test diff"
-    mock_git_service.get_contributors.return_value = (
+    mock_git_service.get_contributors_by_commits.return_value = (
         "- Alice: 2 commit(s)\n- Bob: 1 commit(s)"
     )
 
@@ -62,7 +62,7 @@ def test_summary_with_contributors_calls_get_contributors(
             raise
 
     # Verify get_contributors was called
-    mock_git_service.get_contributors.assert_called_once_with(
+    mock_git_service.get_contributors_by_commits.assert_called_once_with(
         "path", "commitA", "commitB"
     )
 
@@ -102,7 +102,7 @@ def test_summary_without_contributors_does_not_call_get_contributors(
             raise
 
     # Verify get_contributors was not called
-    mock_git_service.get_contributors.assert_not_called()
+    mock_git_service.get_contributors_by_commits.assert_not_called()
 
     # Verify get_token_count was called with None for contributors_info
     mock_summarize_service.get_token_count.assert_called_once()
