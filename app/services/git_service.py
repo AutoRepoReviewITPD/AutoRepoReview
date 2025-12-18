@@ -19,19 +19,18 @@ class GitService:
         )
 
     def _get_contributors(self, output: str) -> str:
-        contributors: dict[str, int] = {}
-        lines = output.split("\n")
-        for line in lines:
-            if line.startswith("Author:"):
-                author = line[len("Author:") :].strip()
-                if author in contributors:
-                    contributors[author] += 1
-                else:
-                    contributors[author] = 1
+        contributors: dict[str, list[str]] = {}
+        for line in output.strip().split("\n"):
+            if "|" in line:
+                author, message = line.split("|", 1)
+                author = author.strip()
+                if author not in contributors:
+                    contributors[author] = []
+                contributors[author].append(message.strip())
 
         result = []
-        for author, count in contributors.items():
-            result.append(f"- {author}: {count} commit(s)")
+        for author, messages in contributors.items():
+            result.append(f"- {author}: {len(messages)} commit(s)")
 
         return "\n".join(result)
 
