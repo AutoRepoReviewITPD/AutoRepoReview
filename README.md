@@ -6,13 +6,25 @@ AI-powered git repository change analysis
 
 ## Quick Start
 
+Before running AutoRepoReview, you need to configure your API settings. The configuration step will prompt you to enter:
+- **API URL** (e.g., `https://api.openai.com/v1`)
+- **Model name** (optional, e.g., `gpt-4`)
+- **API key** (hidden from display)
+
 ### Option 1: Run via uvx (Recommended)
 
 If you have [uv](https://docs.astral.sh/uv/getting-started/installation/) installed, you can run AutoRepoReview directly:
 
-```bash
-uvx autoreporeview summary <path> <commit_a> <commit_b>
-```
+1. **Configure AutoRepoReview** (first time setup):
+   ```bash
+   uvx autoreporeview configure
+   ```
+   You will be prompted to enter your API URL, model name (optional), and API key.
+
+2. **Run AutoRepoReview**:
+   ```bash
+   uvx autoreporeview summary <path> <commit_a> <commit_b>
+   ```
 
 This will automatically download and run the latest version from PyPI.
 
@@ -28,7 +40,17 @@ This will automatically download and run the latest version from PyPI.
    chmod +x autoreporeview
    ```
 
-3. **Run AutoRepoReview**:
+3. **Configure AutoRepoReview** (first time setup):
+   ```bash
+   # Windows
+   .\autoreporeview.exe configure
+   
+   # Linux/macOS
+   ./autoreporeview configure
+   ```
+   You will be prompted to enter your API URL, model name (optional), and API key.
+
+4. **Run AutoRepoReview**:
    ```bash
    # Windows
    .\autoreporeview.exe summary <path> <commit_a> <commit_b>
@@ -39,11 +61,16 @@ This will automatically download and run the latest version from PyPI.
 
 ### Option 3: Run from GitHub Sources via uvx
 
-Run AutoRepoReview directly from GitHub sources using uvx:
+1. **Configure AutoRepoReview** (first time setup):
+   ```bash
+   uvx --from git+https://github.com/AutoRepoReviewITPD/AutoRepoReview autoreporeview configure
+   ```
+   You will be prompted to enter your API URL, model name (optional), and API key.
 
-```bash
-uvx --from git+https://github.com/AutoRepoReviewITPD/AutoRepoReview autoreporeview summary <path> <commit_a> <commit_b>
-```
+2. **Run AutoRepoReview**:
+   ```bash
+   uvx --from git+https://github.com/AutoRepoReviewITPD/AutoRepoReview autoreporeview summary <path> <commit_a> <commit_b>
+   ```
 
 This builds and runs the tool from the latest GitHub sources.
 
@@ -57,19 +84,59 @@ This builds and runs the tool from the latest GitHub sources.
 
 2. **Install [uv](https://docs.astral.sh/uv/getting-started/installation/)** (if you don't have it)
 
-3. **Run AutoRepoReview**:
+3. **Configure AutoRepoReview** (first time setup):
    ```bash
-   # Make the script executable (Linux/macOS)
+   # Using uv run
+   uv run autoreporeview configure
+   
+   # Or if running directly (after making executable on Linux/macOS)
    chmod +x autoreporeview
-   
-   # Run directly
-   ./autoreporeview summary <path> <commit_a> <commit_b>
-   
-   # Or using uv run
+   ./autoreporeview configure
+   ```
+   You will be prompted to enter your API URL, model name (optional), and API key.
+
+4. **Run AutoRepoReview**:
+   ```bash
+   # Using uv run
    uv run autoreporeview summary <path> <commit_a> <commit_b>
+   
+   # Or run directly (Linux/macOS)
+   ./autoreporeview summary <path> <commit_a> <commit_b>
    ```
 
-That's it! Have fun.
+## Summary Modes
+
+When running the `summary` or `summary-by-time` commands, you'll be prompted to choose a summary mode that focuses on specific aspects of the changes:
+
+1. **General summary** - Provides an overview of all changes (default)
+2. **Documentation changes** - Focuses specifically on documentation updates, README changes, comments, and docstrings
+3. **Features add/removed** - Highlights new features, removed features, and enhancements to existing functionality
+4. **Breaking changes** - Identifies breaking changes, API modifications, and migration requirements
+
+Each mode uses specialized prompts to generate more focused and relevant summaries based on your specific needs.
+
+## Getting Help
+
+You can get help about available commands and options:
+
+- **View all available commands**:
+  ```bash
+  ./autoreporeview --help
+  # Or with uv run
+  uv run autoreporeview --help
+  ```
+
+- **View help for a specific command**:
+
+   Example:
+  
+  ```bash
+  autoreporeview summary --help
+  # Or with uv run
+  uv run autoreporeview summary --help
+  ```
+
+That's it!
 
 ## Releases and Builds
 
