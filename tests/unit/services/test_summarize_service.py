@@ -53,6 +53,7 @@ def test_get_token_count_mode_passthrough(summarize_service: SummarizeService):
     """Verify that the mode is passed through to prepare_prompt and token encoder is used."""
     service = summarize_service
     with patch.object(service, "prepare_prompt", return_value="prompt"), \
+         patch("app.services.summarize_service.config.get_model_config", return_value=None), \
          patch("app.services.summarize_service.tiktoken.encoding_for_model", return_value=Mock(encode=lambda x: [1, 2, 3])):
         assert service.get_token_count("diff", None, SummaryMode.FEATURES) == 3
         service.prepare_prompt.assert_called_with("diff", None, SummaryMode.FEATURES)
