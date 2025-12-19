@@ -121,7 +121,7 @@ You can get help about available commands and options:
 
 - **View all available commands**:
   ```bash
-  autoreporeview --help
+  ./autoreporeview --help
   # Or with uv run
   uv run autoreporeview --help
   ```
