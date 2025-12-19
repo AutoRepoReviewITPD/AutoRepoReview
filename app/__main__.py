@@ -24,11 +24,19 @@ git_service = GitService()
 
 def prompt_for_summary_mode() -> SummaryMode:
     """Prompt the user to select a summary mode interactively."""
-    typer.echo("\nChoose diff summary prompt:")
-    typer.echo("1. General summary")
-    typer.echo("2. Documentation changes")
-    typer.echo("3. Features add/removed")
-    typer.echo("4. Breaking changes")
+    console.print("\n[bold cyan]Choose diff summary prompt:[/bold cyan]\n")
+    
+    options = [
+        ("1", "General summary", "blue"),
+        ("2", "Documentation changes", "green"),
+        ("3", "Features add/removed", "yellow"),
+        ("4", "Breaking changes", "red"),
+    ]
+    
+    for num, desc, color in options:
+        console.print(f"  [bold {color}]{num}.[/bold {color}] [bold]{desc}[/bold]")
+    
+    console.print()
     
     while True:
         choice = typer.prompt("\nEnter your choice (1-4)", default="1")
@@ -43,9 +51,9 @@ def prompt_for_summary_mode() -> SummaryMode:
             elif choice_num == 4:
                 return SummaryMode.BREAKING_CHANGES
             else:
-                typer.echo("Invalid choice. Please enter a number between 1 and 4.", err=True)
+                console.print("[bold red]✗[/bold red] Invalid choice. Please enter a number between 1 and 4.")
         except ValueError:
-            typer.echo("Invalid input. Please enter a number between 1 and 4.", err=True)
+            console.print("[bold red]✗[/bold red] Invalid input. Please enter a number between 1 and 4.")
 
 
 @app.command()
