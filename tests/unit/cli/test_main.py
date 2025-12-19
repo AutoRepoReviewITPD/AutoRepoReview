@@ -4,6 +4,7 @@ import pytest
 from pytest import CaptureFixture
 import typer
 from rich.markdown import Markdown
+from datetime import datetime, timedelta
 
 from app import __main__ as main
 from app.services.summarize_service import SummaryMode
@@ -357,9 +358,6 @@ def test_summary_user_cancels(capsys: CaptureFixture[str]) -> None:
     assert "Summarization cancelled by user." in captured.err
     # Ensure summarize was not called
     mock_summarize_service.summarize.assert_not_called()
-
-
-from datetime import datetime, timedelta
 
 
 def test_summary_by_time_user_cancels(capsys: CaptureFixture[str]) -> None:
