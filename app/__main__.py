@@ -25,19 +25,19 @@ git_service = GitService()
 def prompt_for_summary_mode() -> SummaryMode:
     """Prompt the user to select a summary mode interactively."""
     console.print("\n[bold cyan]Choose diff summary prompt:[/bold cyan]\n")
-    
+
     options = [
         ("1", "General summary", "blue"),
         ("2", "Documentation changes", "green"),
         ("3", "Features add/removed", "yellow"),
         ("4", "Breaking changes", "red"),
     ]
-    
+
     for num, desc, color in options:
         console.print(f"  [bold {color}]{num}.[/bold {color}] [bold]{desc}[/bold]")
-    
+
     console.print()
-    
+
     while True:
         choice = typer.prompt("\nEnter your choice (1-4)", default="1")
         try:
@@ -51,9 +51,13 @@ def prompt_for_summary_mode() -> SummaryMode:
             elif choice_num == 4:
                 return SummaryMode.BREAKING_CHANGES
             else:
-                console.print("[bold red]✗[/bold red] Invalid choice. Please enter a number between 1 and 4.")
+                console.print(
+                    "[bold red]✗[/bold red] Invalid choice. Please enter a number between 1 and 4."
+                )
         except ValueError:
-            console.print("[bold red]✗[/bold red] Invalid input. Please enter a number between 1 and 4.")
+            console.print(
+                "[bold red]✗[/bold red] Invalid input. Please enter a number between 1 and 4."
+            )
 
 
 @app.command()
@@ -86,8 +90,10 @@ def summary(
                 )
 
             summary_mode = prompt_for_summary_mode()
-            
-            token_count = summarize_service.get_token_count(diff, contributors_info, summary_mode)
+
+            token_count = summarize_service.get_token_count(
+                diff, contributors_info, summary_mode
+            )
             typer.echo(f"\nEstimated input token count: {token_count}", err=True)
 
             if not typer.confirm(
@@ -99,7 +105,9 @@ def summary(
             with tracer.start_as_current_span("summarize") as summarize_span:
                 summarize_span.set_attribute("token_count", token_count)
                 summarize_span.set_attribute("summary_mode", summary_mode.value)
-                result = summarize_service.summarize(diff, contributors_info, summary_mode)
+                result = summarize_service.summarize(
+                    diff, contributors_info, summary_mode
+                )
                 console.print("\n")
                 console.print(Markdown(result))
                 span.set_attribute("summary_length", len(result))
@@ -141,7 +149,9 @@ def summary_by_time(
 
     summary_mode = prompt_for_summary_mode()
 
-    token_count = summarize_service.get_token_count(diff, contributors_info, summary_mode)
+    token_count = summarize_service.get_token_count(
+        diff, contributors_info, summary_mode
+    )
     typer.echo(f"\nEstimated input token count: {token_count}", err=True)
 
     if not typer.confirm("Do you want to proceed with summarization?", default=True):
