@@ -343,7 +343,9 @@ def test_summary_user_cancels(capsys: CaptureFixture[str]) -> None:
     with (
         patch("app.__main__.git_service", mock_git_service),
         patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
-        patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.FEATURES),
+        patch(
+            "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.FEATURES
+        ),
         patch("app.__main__.typer.confirm", return_value=False),
         pytest.raises(typer.Exit) as exc_info,
     ):
@@ -359,6 +361,7 @@ def test_summary_user_cancels(capsys: CaptureFixture[str]) -> None:
 
 from datetime import datetime, timedelta
 
+
 def test_summary_by_time_user_cancels(capsys: CaptureFixture[str]) -> None:
     """Test that summary_by_time aborts when user cancels confirmation."""
     mock_summarize_service = Mock()
@@ -372,7 +375,10 @@ def test_summary_by_time_user_cancels(capsys: CaptureFixture[str]) -> None:
     with (
         patch("app.__main__.git_service", mock_git_service),
         patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
-        patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.DOCUMENTATION),
+        patch(
+            "app.__main__.prompt_for_summary_mode",
+            return_value=SummaryMode.DOCUMENTATION,
+        ),
         patch("app.__main__.typer.confirm", return_value=False),
         pytest.raises(typer.Exit) as exc_info,
     ):

@@ -24,16 +24,35 @@ def test_formulating_prompt(
 def test_prepare_prompt_all_modes(summarize_service: SummarizeService) -> None:
     """Test prepare_prompt yields key text for each summary mode."""
     diff = "some-diff"
-    assert "documentation changes" in summarize_service.prepare_prompt(diff, mode=SummaryMode.DOCUMENTATION).lower()
-    assert "features that were added or removed" in summarize_service.prepare_prompt(diff, mode=SummaryMode.FEATURES).lower()
-    assert "breaking changes that may affect" in summarize_service.prepare_prompt(diff, mode=SummaryMode.BREAKING_CHANGES).lower()
-    assert "concise summary" in summarize_service.prepare_prompt(diff, mode=SummaryMode.GENERAL).lower()
+    assert (
+        "documentation changes"
+        in summarize_service.prepare_prompt(
+            diff, mode=SummaryMode.DOCUMENTATION
+        ).lower()
+    )
+    assert (
+        "features that were added or removed"
+        in summarize_service.prepare_prompt(diff, mode=SummaryMode.FEATURES).lower()
+    )
+    assert (
+        "breaking changes that may affect"
+        in summarize_service.prepare_prompt(
+            diff, mode=SummaryMode.BREAKING_CHANGES
+        ).lower()
+    )
+    assert (
+        "concise summary"
+        in summarize_service.prepare_prompt(diff, mode=SummaryMode.GENERAL).lower()
+    )
+
 
 def test_summarize_calls_agent_in_all_modes(summarize_service: SummarizeService):
     """Ensure the agent is invoked for each summary mode using the fixture-provided service."""
     service = summarize_service
     for mode in SummaryMode:
-        with patch.object(service.agent, "invoke", return_value=f"result: {mode}") as mock_invoke:
+        with patch.object(
+            service.agent, "invoke", return_value=f"result: {mode}"
+        ) as mock_invoke:
             result = service.summarize("diff-content", None, mode)
             assert result == f"result: {mode}"
             assert mock_invoke.call_count == 1
@@ -49,14 +68,23 @@ def test_summarize_calls_agent_in_all_modes(summarize_service: SummarizeService)
             elif mode == SummaryMode.BREAKING_CHANGES:
                 assert "breaking changes that may affect" in called_prompt.lower()
 
+
 def test_get_token_count_mode_passthrough(summarize_service: SummarizeService):
     """Verify that the mode is passed through to prepare_prompt and token encoder is used."""
     service = summarize_service
-    with patch.object(service, "prepare_prompt", return_value="prompt"), \
-         patch("app.services.summarize_service.config.get_model_config", return_value=None), \
-         patch("app.services.summarize_service.tiktoken.encoding_for_model", return_value=Mock(encode=lambda x: [1, 2, 3])):
+    with (
+        patch.object(service, "prepare_prompt", return_value="prompt"),
+        patch(
+            "app.services.summarize_service.config.get_model_config", return_value=None
+        ),
+        patch(
+            "app.services.summarize_service.tiktoken.encoding_for_model",
+            return_value=Mock(encode=lambda x: [1, 2, 3]),
+        ),
+    ):
         assert service.get_token_count("diff", None, SummaryMode.FEATURES) == 3
         service.prepare_prompt.assert_called_with("diff", None, SummaryMode.FEATURES)
+
 
 def test_prepare_prompt_with_contributors_info(
     summarize_service: SummarizeService,
