@@ -32,7 +32,9 @@ def test_get_contributors_with_multiple_contributors(
         git_service, "_call_os", return_value=mock_output
     ) as mock_call_os:
         with patch("app.services.git_service.os.chdir"):
-            result = git_service.get_contributors("path", "commitA", "commitB")
+            result = git_service.get_contributors_by_commits(
+                "path", "commitA", "commitB"
+            )
 
     mock_call_os.assert_called_once_with(expected_command)
     # Check that both contributors are present with correct counts
@@ -55,7 +57,9 @@ def test_get_contributors_with_single_contributor(
         git_service, "_call_os", return_value=mock_output
     ) as mock_call_os:
         with patch("app.services.git_service.os.chdir"):
-            result = git_service.get_contributors("path", "commitA", "commitB")
+            result = git_service.get_contributors_by_commits(
+                "path", "commitA", "commitB"
+            )
 
     mock_call_os.assert_called_once_with(expected_command)
     assert result == "- Alice: 2 commit(s)"
@@ -72,7 +76,9 @@ def test_get_contributors_with_empty_output(
         git_service, "_call_os", return_value=mock_output
     ) as mock_call_os:
         with patch("app.services.git_service.os.chdir"):
-            result = git_service.get_contributors("path", "commitA", "commitB")
+            result = git_service.get_contributors_by_commits(
+                "path", "commitA", "commitB"
+            )
 
     mock_call_os.assert_called_once_with(expected_command)
     assert result == ""
@@ -89,7 +95,9 @@ def test_get_contributors_with_whitespace_only(
         git_service, "_call_os", return_value=mock_output
     ) as mock_call_os:
         with patch("app.services.git_service.os.chdir"):
-            result = git_service.get_contributors("path", "commitA", "commitB")
+            result = git_service.get_contributors_by_commits(
+                "path", "commitA", "commitB"
+            )
 
     mock_call_os.assert_called_once_with(expected_command)
     assert result == ""
@@ -106,7 +114,9 @@ def test_get_contributors_ignores_lines_without_separator(
         git_service, "_call_os", return_value=mock_output
     ) as mock_call_os:
         with patch("app.services.git_service.os.chdir"):
-            result = git_service.get_contributors("path", "commitA", "commitB")
+            result = git_service.get_contributors_by_commits(
+                "path", "commitA", "commitB"
+            )
 
     mock_call_os.assert_called_once_with(expected_command)
     assert "- Alice: 1 commit(s)" in result
@@ -125,7 +135,9 @@ def test_get_contributors_strips_whitespace_from_author_and_message(
         git_service, "_call_os", return_value=mock_output
     ) as mock_call_os:
         with patch("app.services.git_service.os.chdir"):
-            result = git_service.get_contributors("path", "commitA", "commitB")
+            result = git_service.get_contributors_by_commits(
+                "path", "commitA", "commitB"
+            )
 
     mock_call_os.assert_called_once_with(expected_command)
     assert "- Alice: 1 commit(s)" in result
@@ -143,7 +155,9 @@ def test_get_contributors_handles_commit_messages_with_pipe(
         git_service, "_call_os", return_value=mock_output
     ) as mock_call_os:
         with patch("app.services.git_service.os.chdir"):
-            result = git_service.get_contributors("path", "commitA", "commitB")
+            result = git_service.get_contributors_by_commits(
+                "path", "commitA", "commitB"
+            )
 
     mock_call_os.assert_called_once_with(expected_command)
     assert "- Alice: 1 commit(s)" in result
