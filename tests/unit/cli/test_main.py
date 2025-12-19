@@ -4,6 +4,7 @@ import pytest
 from pytest import CaptureFixture
 import typer
 from rich.markdown import Markdown
+from datetime import datetime, timedelta
 
 from app import __main__ as main
 from app.services.summarize_service import SummaryMode
@@ -331,3 +332,57 @@ def test_show_config_without_model_name(capsys: CaptureFixture[str]) -> None:
     captured = capsys.readouterr()
     assert "API URL: https://api.openai.com/v1" in captured.out
     assert "Model name:" not in captured.out
+
+
+def test_summary_user_cancels(capsys: CaptureFixture[str]) -> None:
+    """Test that when user cancels via confirmation, summarization is aborted."""
+    mock_summarize_service = Mock()
+    mock_summarize_service.get_token_count.return_value = 10
+    mock_git_service = Mock()
+    mock_git_service.get_diff.return_value = "test diff"
+
+    with (
+        patch("app.__main__.git_service", mock_git_service),
+        patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
+        patch(
+            "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.FEATURES
+        ),
+        patch("app.__main__.typer.confirm", return_value=False),
+        pytest.raises(typer.Exit) as exc_info,
+    ):
+        main.summary("path", "commitA", "commitB")
+
+    # Exit code 0 indicates user cancelled (some environments may return 1)
+    assert exc_info.value.exit_code in (0, 1)
+    captured = capsys.readouterr()
+    assert "Summarization cancelled by user." in captured.err
+    # Ensure summarize was not called
+    mock_summarize_service.summarize.assert_not_called()
+
+
+def test_summary_by_time_user_cancels(capsys: CaptureFixture[str]) -> None:
+    """Test that summary_by_time aborts when user cancels confirmation."""
+    mock_summarize_service = Mock()
+    mock_summarize_service.get_token_count.return_value = 5
+    mock_git_service = Mock()
+    mock_git_service.get_diff_by_time.return_value = "time based diff"
+
+    start = datetime.utcnow() - timedelta(days=1)
+    end = datetime.utcnow()
+
+    with (
+        patch("app.__main__.git_service", mock_git_service),
+        patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
+        patch(
+            "app.__main__.prompt_for_summary_mode",
+            return_value=SummaryMode.DOCUMENTATION,
+        ),
+        patch("app.__main__.typer.confirm", return_value=False),
+        pytest.raises(typer.Exit) as exc_info,
+    ):
+        main.summary_by_time("path", start, end)
+
+    assert exc_info.value.exit_code in (0, 1)
+    captured = capsys.readouterr()
+    assert "Summarization cancelled by user." in captured.err
+    mock_summarize_service.summarize.assert_not_called()
