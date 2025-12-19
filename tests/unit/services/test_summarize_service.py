@@ -11,7 +11,10 @@ def test_formulating_prompt(
     diff = str(uuid4())
     prompt = summarize_service.prepare_prompt(diff, None, SummaryMode.GENERAL)
 
-    assert "Analyze the git diff below and provide a concise summary of the changes." in prompt
+    assert (
+        "Analyze the git diff below and provide a concise summary of the changes."
+        in prompt
+    )
     assert "Main purpose and high-level changes" in prompt
     assert "**Summary:**" in prompt
     assert "**Key Changes:**" in prompt
@@ -24,7 +27,9 @@ def test_prepare_prompt_with_contributors_info(
     """Test that prepare_prompt includes contributors information when provided."""
     diff = str(uuid4())
     contributors_info = "- Alice: 2 commit(s)\n- Bob: 1 commit(s)"
-    prompt = summarize_service.prepare_prompt(diff, contributors_info, SummaryMode.GENERAL)
+    prompt = summarize_service.prepare_prompt(
+        diff, contributors_info, SummaryMode.GENERAL
+    )
 
     assert "**Contributors Information:**" in prompt
     assert contributors_info in prompt
@@ -135,7 +140,9 @@ def test_get_token_count_with_contributors_info(
             mock_encoder.encode.return_value = [1, 2, 3, 4, 5, 6, 7]
             mock_encoding.return_value = mock_encoder
 
-            token_count = summarize_service.get_token_count(diff, contributors_info, SummaryMode.GENERAL)
+            token_count = summarize_service.get_token_count(
+                diff, contributors_info, SummaryMode.GENERAL
+            )
 
             assert token_count == 7
             # Verify the prompt includes contributors info

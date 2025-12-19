@@ -22,7 +22,9 @@ def test_summary_function_prints_changes(capsys: CaptureFixture[str]) -> None:
             patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
             patch("app.__main__.typer.confirm", return_value=True),
             patch("app.__main__.console.print"),
-            patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
+            patch(
+                "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL
+            ),
         ):
             main.summary("path", "commitA", "commitB")
     except typer.Exit as e:
@@ -58,7 +60,9 @@ def test_summary_with_contributors_calls_get_contributors(
             patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
             patch("app.__main__.typer.confirm", return_value=True),
             patch("app.__main__.console.print"),
-            patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
+            patch(
+                "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL
+            ),
         ):
             main.summary("path", "commitA", "commitB", contributors=True)
     except typer.Exit as e:
@@ -101,7 +105,9 @@ def test_summary_without_contributors_does_not_call_get_contributors(
             patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
             patch("app.__main__.typer.confirm", return_value=True),
             patch("app.__main__.console.print"),
-            patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
+            patch(
+                "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL
+            ),
         ):
             main.summary("path", "commitA", "commitB", contributors=False)
     except typer.Exit as e:
@@ -141,7 +147,9 @@ def test_summary_prints_markdown_output(capsys: CaptureFixture[str]) -> None:
             patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
             patch("app.__main__.typer.confirm", return_value=True),
             patch("app.__main__.console.print") as mock_console_print,
-            patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
+            patch(
+                "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL
+            ),
         ):
             main.summary("path", "commitA", "commitB")
     except typer.Exit as e:
@@ -157,7 +165,7 @@ def test_summary_prints_markdown_output(capsys: CaptureFixture[str]) -> None:
         if len(call[0]) > 0 and isinstance(call[0][0], Markdown):
             markdown_call = call
             break
-    
+
     assert markdown_call is not None, "Markdown object should be printed"
     assert markdown_call[0][0].markup == summary_text
 
