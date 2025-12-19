@@ -46,7 +46,9 @@ def test_prepare_prompt_all_modes(summarize_service: SummarizeService) -> None:
     )
 
 
-def test_summarize_calls_agent_in_all_modes(summarize_service: SummarizeService):
+def test_summarize_calls_agent_in_all_modes(
+    summarize_service: SummarizeService,
+) -> None:
     """Ensure the agent is invoked for each summary mode using the fixture-provided service."""
     service = summarize_service
     for mode in SummaryMode:
@@ -69,11 +71,11 @@ def test_summarize_calls_agent_in_all_modes(summarize_service: SummarizeService)
                 assert "breaking changes that may affect" in called_prompt.lower()
 
 
-def test_get_token_count_mode_passthrough(summarize_service: SummarizeService):
+def test_get_token_count_mode_passthrough(summarize_service: SummarizeService) -> None:
     """Verify that the mode is passed through to prepare_prompt and token encoder is used."""
     service = summarize_service
     with (
-        patch.object(service, "prepare_prompt", return_value="prompt"),
+        patch.object(service, "prepare_prompt", return_value="prompt") as mock_prepare,
         patch(
             "app.services.summarize_service.config.get_model_config", return_value=None
         ),
@@ -83,7 +85,7 @@ def test_get_token_count_mode_passthrough(summarize_service: SummarizeService):
         ),
     ):
         assert service.get_token_count("diff", None, SummaryMode.FEATURES) == 3
-        service.prepare_prompt.assert_called_with("diff", None, SummaryMode.FEATURES)
+        mock_prepare.assert_called_with("diff", None, SummaryMode.FEATURES)
 
 
 def test_prepare_prompt_with_contributors_info(
