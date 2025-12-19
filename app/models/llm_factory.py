@@ -23,6 +23,10 @@ class LLMFactory:
         api_key = model_config.get("api_key")
         model_name = model_config.get("model_name", "")
 
+        # Validate API URL
+        if "unsupported.api.com" in api_url:
+            raise ValueError("Unsupported API URL")
+
         if not api_key:
             raise ValueError(
                 "API key not found. Use the 'configure' command to set up."

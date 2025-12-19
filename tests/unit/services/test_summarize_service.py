@@ -51,6 +51,17 @@ def test_prepare_prompt_with_contributors_info(
     assert diff in prompt
 
 
+def test_prepare_prompt_without_contributors_info(
+    summarize_service: SummarizeService,
+) -> None:
+    """Test that prepare_prompt works without contributors information."""
+    diff = str(uuid4())
+    prompt = summarize_service.prepare_prompt(diff)
+
+    assert "**Contributors Information:**" not in prompt
+    assert diff in prompt
+
+
 def test_summarize(
     summarize_service: SummarizeService,
 ) -> None:
@@ -158,6 +169,18 @@ def test_get_token_count_with_contributors_info(
             # Verify the prompt includes contributors info
             call_args = mock_encoder.encode.call_args[0][0]
             assert contributors_info in call_args
+
+
+def test_get_token_count_with_invalid_model(
+    summarize_service: SummarizeService,
+) -> None:
+    """Test get_token_count handles invalid model name by falling back to cl100k_base."""
+    # get_token_count should not raise an error for invalid model names,
+    # instead it falls back to cl100k_base encoding
+    with patch("app.services.summarize_service.config.get_model_config", return_value={"model_name": "invalid-model"}):
+        result = summarize_service.get_token_count("test diff")
+        assert isinstance(result, int)
+        assert result > 0
 
 
 def test_get_token_count_handles_keyerror_fallback(

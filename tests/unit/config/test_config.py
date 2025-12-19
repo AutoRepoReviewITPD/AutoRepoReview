@@ -270,3 +270,23 @@ def test_set_model_config_accepts_http_url(
 
         config_data = json.loads(config_instance.CONFIG_FILE.read_text())
         assert config_data["api_url"] == api_url
+
+
+@patch("app.config.os.chmod")
+def test_ensure_config_dir_handles_existing_directory(
+    mock_chmod: Mock, config_instance: Config
+) -> None:
+    """Test _ensure_config_dir when directory already exists."""
+    config_instance.CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    config_instance._ensure_config_dir()
+    mock_chmod.assert_called_once_with(config_instance.CONFIG_FILE, 0o600)
+
+
+@patch("app.config.os.chmod")
+def test_ensure_config_dir_handles_permission_error(
+    mock_chmod: Mock, config_instance: Config
+) -> None:
+    """Test _ensure_config_dir when permission error occurs."""
+    with patch("app.config.Path.mkdir", side_effect=PermissionError):
+        with pytest.raises(PermissionError):
+            config_instance._ensure_config_dir()

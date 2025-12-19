@@ -308,3 +308,99 @@ def test_show_config_without_model_name(capsys: CaptureFixture[str]) -> None:
     captured = capsys.readouterr()
     assert "API URL: https://api.openai.com/v1" in captured.out
     assert "Model name:" not in captured.out
+
+
+def test_summary_handles_git_diff_exception(capsys: CaptureFixture[str]) -> None:
+    """Test summary handles exceptions from git_service.get_diff."""
+    mock_git_service = Mock()
+    mock_git_service.get_diff.side_effect = Exception("git diff failed")
+    with patch("app.models.llm_factory.LLMFactory.create_llm", return_value=Mock()):
+        with patch("app.__main__.git_service", mock_git_service):
+            with pytest.raises(typer.Exit):
+                main.summary("path", "commitA", "commitB")
+
+
+def test_summary_with_invalid_commit_hashes(capsys: CaptureFixture[str]) -> None:
+    """Test summary handles invalid commit hashes."""
+    mock_git_service = Mock()
+    mock_git_service.get_diff.return_value = ""
+    with patch("app.models.llm_factory.LLMFactory.create_llm", return_value=Mock()):
+        with patch("app.__main__.git_service", mock_git_service):
+            with patch("app.__main__.typer.confirm", return_value=False):
+                with pytest.raises(typer.Exit):
+                    main.summary("path", "invalid-hash", "another-invalid-hash")
+
+
+def test_summary_by_time_function_prints_changes(capsys: CaptureFixture[str]) -> None:
+    """Test summary_by_time prints the changes summary."""
+    from datetime import datetime
+    
+    mock_summarize_service = Mock()
+    mock_summarize_service.summarize.return_value = "Test summary"
+    mock_summarize_service.get_token_count.return_value = 100
+    mock_git_service = Mock()
+    mock_git_service.get_diff_by_time.return_value = "test diff"
+
+    with (
+        patch("app.__main__.git_service", mock_git_service),
+        patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
+        patch("app.__main__.typer.confirm", return_value=True),
+        patch("app.__main__.console.print"),
+    ):
+        start_time = datetime(2024, 1, 1)
+        end_time = datetime(2024, 1, 2)
+        main.summary_by_time("path", start_time, end_time)
+    
+    # Verify get_diff_by_time was called with correct arguments
+    mock_git_service.get_diff_by_time.assert_called_once_with("path", start_time, end_time)
+    # Verify summarize was called with the diff
+    assert mock_summarize_service.summarize.called
+    # Verify the first argument to summarize is the diff
+    assert mock_summarize_service.summarize.call_args[0][0] == "test diff"
+
+
+def test_summary_by_time_with_contributors(capsys: CaptureFixture[str]) -> None:
+    """Test summary_by_time with contributors option."""
+    from datetime import datetime
+    
+    mock_summarize_service = Mock()
+    mock_summarize_service.summarize.return_value = "Test summary"
+    mock_summarize_service.get_token_count.return_value = 100
+    mock_git_service = Mock()
+    mock_git_service.get_diff_by_time.return_value = "test diff"
+    mock_git_service.get_contributors_by_time.return_value = "- Alice: 2 commits"
+
+    with (
+        patch("app.__main__.git_service", mock_git_service),
+        patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
+        patch("app.__main__.typer.confirm", return_value=True),
+        patch("app.__main__.console.print"),
+    ):
+        start_time = datetime(2024, 1, 1)
+        end_time = datetime(2024, 1, 2)
+        main.summary_by_time("path", start_time, end_time, contributors=True)
+    
+    mock_git_service.get_contributors_by_time.assert_called_once_with("path", start_time, end_time)
+    mock_summarize_service.summarize.assert_called_once()
+    call_args = mock_summarize_service.summarize.call_args
+    assert call_args[0][1] == "- Alice: 2 commits"
+
+
+def test_summary_by_time_user_cancels(capsys: CaptureFixture[str]) -> None:
+    """Test summary_by_time when user cancels."""
+    from datetime import datetime
+    
+    mock_summarize_service = Mock()
+    mock_summarize_service.get_token_count.return_value = 100
+    mock_git_service = Mock()
+    mock_git_service.get_diff_by_time.return_value = "test diff"
+
+    with (
+        patch("app.__main__.git_service", mock_git_service),
+        patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
+        patch("app.__main__.typer.confirm", return_value=False),
+    ):
+        start_time = datetime(2024, 1, 1)
+        end_time = datetime(2024, 1, 2)
+        with pytest.raises(typer.Exit):
+            main.summary_by_time("path", start_time, end_time)

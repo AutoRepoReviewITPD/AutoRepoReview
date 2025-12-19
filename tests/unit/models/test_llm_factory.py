@@ -31,6 +31,21 @@ def test_create_llm_raises_error_when_api_key_empty() -> None:
             LLMFactory.create_llm()
 
 
+def test_create_llm_with_unsupported_api_url() -> None:
+    """Test create_llm raises error for unsupported API URLs."""
+    config = {"api_url": "https://unsupported.api.com", "api_key": "test-key"}
+    with patch("app.models.llm_factory.config.get_model_config", return_value=config):
+        with pytest.raises(ValueError, match="Unsupported API URL"):
+            LLMFactory.create_llm()
+
+
+def test_create_llm_with_missing_configuration() -> None:
+    """Test create_llm raises error for missing configuration."""
+    with patch("app.models.llm_factory.config.get_model_config", return_value=None):
+        with pytest.raises(ValueError, match="Model is not configured"):
+            LLMFactory.create_llm()
+
+
 @patch("app.models.llm_factory.GigaChat")
 def test_create_llm_creates_gigachat_model(mock_gigachat: Mock) -> None:
     """Test that create_llm creates GigaChat model for GigaChat API URL."""
