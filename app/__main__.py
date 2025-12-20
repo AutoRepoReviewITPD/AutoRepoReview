@@ -137,6 +137,8 @@ def summary_by_time(
         help="Include contributors information in the summary",
     ),
 ) -> None:
+    """Creates a summary of changes between two datetimes."""
+
     diff = git_service.get_diff_by_time(path, start_time, end_time)
 
     contributors_info = None

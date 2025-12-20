@@ -234,7 +234,10 @@ def test_get_token_count_with_invalid_model(
     """Test get_token_count handles invalid model name by falling back to cl100k_base."""
     # get_token_count should not raise an error for invalid model names,
     # instead it falls back to cl100k_base encoding
-    with patch("app.services.summarize_service.config.get_model_config", return_value={"model_name": "invalid-model"}):
+    with patch(
+        "app.services.summarize_service.config.get_model_config",
+        return_value={"model_name": "invalid-model"},
+    ):
         result = summarize_service.get_token_count("test diff")
         assert isinstance(result, int)
         assert result > 0
