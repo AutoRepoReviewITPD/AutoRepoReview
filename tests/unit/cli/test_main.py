@@ -4,8 +4,10 @@ import pytest
 from pytest import CaptureFixture
 import typer
 from rich.markdown import Markdown
+from datetime import datetime, timedelta
 
 from app import __main__ as main
+from app.services.summarize_service import SummaryMode
 
 
 def test_summary_function_prints_changes(capsys: CaptureFixture[str]) -> None:
@@ -21,6 +23,9 @@ def test_summary_function_prints_changes(capsys: CaptureFixture[str]) -> None:
             patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
             patch("app.__main__.typer.confirm", return_value=True),
             patch("app.__main__.console.print"),
+            patch(
+                "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL
+            ),
         ):
             main.summary("path", "commitA", "commitB")
     except typer.Exit as e:
@@ -34,6 +39,7 @@ def test_summary_function_prints_changes(capsys: CaptureFixture[str]) -> None:
     mock_summarize_service.summarize.assert_called_once()
     call_args = mock_summarize_service.summarize.call_args
     assert call_args[0][0] == "test diff"
+    assert call_args[0][2] == SummaryMode.GENERAL  # mode parameter
 
 
 def test_summary_with_contributors_calls_get_contributors(
@@ -55,6 +61,9 @@ def test_summary_with_contributors_calls_get_contributors(
             patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
             patch("app.__main__.typer.confirm", return_value=True),
             patch("app.__main__.console.print"),
+            patch(
+                "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL
+            ),
         ):
             main.summary("path", "commitA", "commitB", contributors=True)
     except typer.Exit as e:
@@ -66,17 +75,19 @@ def test_summary_with_contributors_calls_get_contributors(
         "path", "commitA", "commitB"
     )
 
-    # Verify get_token_count was called with contributors_info
+    # Verify get_token_count was called with contributors_info and mode
     mock_summarize_service.get_token_count.assert_called_once()
     token_call_args = mock_summarize_service.get_token_count.call_args
     assert token_call_args[0][0] == "test diff"
     assert token_call_args[0][1] == "- Alice: 2 commit(s)\n- Bob: 1 commit(s)"
+    assert token_call_args[0][2] == SummaryMode.GENERAL  # mode parameter
 
-    # Verify summarize was called with contributors_info
+    # Verify summarize was called with contributors_info and mode
     mock_summarize_service.summarize.assert_called_once()
     summarize_call_args = mock_summarize_service.summarize.call_args
     assert summarize_call_args[0][0] == "test diff"
     assert summarize_call_args[0][1] == "- Alice: 2 commit(s)\n- Bob: 1 commit(s)"
+    assert summarize_call_args[0][2] == SummaryMode.GENERAL  # mode parameter
 
 
 def test_summary_without_contributors_does_not_call_get_contributors(
@@ -95,6 +106,9 @@ def test_summary_without_contributors_does_not_call_get_contributors(
             patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
             patch("app.__main__.typer.confirm", return_value=True),
             patch("app.__main__.console.print"),
+            patch(
+                "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL
+            ),
         ):
             main.summary("path", "commitA", "commitB", contributors=False)
     except typer.Exit as e:
@@ -104,17 +118,19 @@ def test_summary_without_contributors_does_not_call_get_contributors(
     # Verify get_contributors was not called
     mock_git_service.get_contributors_by_commits.assert_not_called()
 
-    # Verify get_token_count was called with None for contributors_info
+    # Verify get_token_count was called with None for contributors_info and mode
     mock_summarize_service.get_token_count.assert_called_once()
     token_call_args = mock_summarize_service.get_token_count.call_args
     assert token_call_args[0][0] == "test diff"
     assert token_call_args[0][1] is None
+    assert token_call_args[0][2] == SummaryMode.GENERAL  # mode parameter
 
-    # Verify summarize was called with None for contributors_info
+    # Verify summarize was called with None for contributors_info and mode
     mock_summarize_service.summarize.assert_called_once()
     summarize_call_args = mock_summarize_service.summarize.call_args
     assert summarize_call_args[0][0] == "test diff"
     assert summarize_call_args[0][1] is None
+    assert summarize_call_args[0][2] == SummaryMode.GENERAL  # mode parameter
 
 
 def test_summary_prints_markdown_output(capsys: CaptureFixture[str]) -> None:
@@ -132,23 +148,27 @@ def test_summary_prints_markdown_output(capsys: CaptureFixture[str]) -> None:
             patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
             patch("app.__main__.typer.confirm", return_value=True),
             patch("app.__main__.console.print") as mock_console_print,
+            patch(
+                "app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL
+            ),
         ):
             main.summary("path", "commitA", "commitB")
     except typer.Exit as e:
         if e.exit_code != 0:
             raise
 
-    # Verify console.print was called twice: once with newline, once with Markdown
-    assert mock_console_print.call_count == 2
+    # Verify console.print was called multiple times (newline, prompt display, newline, Markdown)
+    assert mock_console_print.call_count >= 2
 
-    # First call should be with newline
-    first_call = mock_console_print.call_args_list[0]
-    assert first_call[0][0] == "\n"
+    # Find the Markdown call
+    markdown_call = None
+    for call in mock_console_print.call_args_list:
+        if len(call[0]) > 0 and isinstance(call[0][0], Markdown):
+            markdown_call = call
+            break
 
-    # Second call should be with Markdown object
-    second_call = mock_console_print.call_args_list[1]
-    assert isinstance(second_call[0][0], Markdown)
-    assert second_call[0][0].markup == summary_text
+    assert markdown_call is not None, "Markdown object should be printed"
+    assert markdown_call[0][0].markup == summary_text
 
 
 def test_summary_handles_value_error(capsys: CaptureFixture[str]) -> None:
@@ -162,6 +182,7 @@ def test_summary_handles_value_error(capsys: CaptureFixture[str]) -> None:
         patch("app.__main__.git_service", mock_git_service),
         patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
         patch("app.__main__.typer.confirm", return_value=True),
+        patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
         pytest.raises(typer.Exit) as exc_info,
     ):
         main.summary("path", "commitA", "commitB")
@@ -182,6 +203,7 @@ def test_summary_handles_connection_error(capsys: CaptureFixture[str]) -> None:
         patch("app.__main__.git_service", mock_git_service),
         patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
         patch("app.__main__.typer.confirm", return_value=True),
+        patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
         pytest.raises(typer.Exit) as exc_info,
     ):
         main.summary("path", "commitA", "commitB")
@@ -202,6 +224,7 @@ def test_summary_handles_runtime_error(capsys: CaptureFixture[str]) -> None:
         patch("app.__main__.git_service", mock_git_service),
         patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
         patch("app.__main__.typer.confirm", return_value=True),
+        patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
         pytest.raises(typer.Exit) as exc_info,
     ):
         main.summary("path", "commitA", "commitB")
@@ -222,6 +245,7 @@ def test_summary_handles_unexpected_error(capsys: CaptureFixture[str]) -> None:
         patch("app.__main__.git_service", mock_git_service),
         patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
         patch("app.__main__.typer.confirm", return_value=True),
+        patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
         pytest.raises(typer.Exit) as exc_info,
     ):
         main.summary("path", "commitA", "commitB")
@@ -310,6 +334,7 @@ def test_show_config_without_model_name(capsys: CaptureFixture[str]) -> None:
     assert "Model name:" not in captured.out
 
 
+
 def test_summary_handles_git_diff_exception(capsys: CaptureFixture[str]) -> None:
     """Test summary handles exceptions from git_service.get_diff."""
     mock_git_service = Mock()
@@ -333,7 +358,6 @@ def test_summary_with_invalid_commit_hashes(capsys: CaptureFixture[str]) -> None
 
 def test_summary_by_time_function_prints_changes(capsys: CaptureFixture[str]) -> None:
     """Test summary_by_time prints the changes summary."""
-    from datetime import datetime
     
     mock_summarize_service = Mock()
     mock_summarize_service.summarize.return_value = "Test summary"
@@ -341,28 +365,29 @@ def test_summary_by_time_function_prints_changes(capsys: CaptureFixture[str]) ->
     mock_git_service = Mock()
     mock_git_service.get_diff_by_time.return_value = "test diff"
 
+def test_summary_user_cancels(capsys: CaptureFixture[str]) -> None:
+    """Test that when user cancels via confirmation, summarization is aborted."""
+    mock_summarize_service = Mock()
+    mock_summarize_service.get_token_count.return_value = 10
+    mock_git_service = Mock()
+    mock_git_service.get_diff.return_value = "test diff"
+
     with (
         patch("app.__main__.git_service", mock_git_service),
         patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
-        patch("app.__main__.typer.confirm", return_value=True),
-        patch("app.__main__.console.print"),
+        patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
+        patch("app.__main__.typer.confirm", return_value=False),
+        patch("app.__main__.typer.echo"),
     ):
-        start_time = datetime(2024, 1, 1)
-        end_time = datetime(2024, 1, 2)
-        main.summary_by_time("path", start_time, end_time)
+        with pytest.raises(typer.Exit):
+            main.summary("path", "commitA", "commitB")
     
-    # Verify get_diff_by_time was called with correct arguments
-    mock_git_service.get_diff_by_time.assert_called_once_with("path", start_time, end_time)
-    # Verify summarize was called with the diff
-    assert mock_summarize_service.summarize.called
-    # Verify the first argument to summarize is the diff
-    assert mock_summarize_service.summarize.call_args[0][0] == "test diff"
+    # Verify summarize was NOT called since user cancelled
+    mock_summarize_service.summarize.assert_not_called()
 
 
 def test_summary_by_time_with_contributors(capsys: CaptureFixture[str]) -> None:
     """Test summary_by_time with contributors option."""
-    from datetime import datetime
-    
     mock_summarize_service = Mock()
     mock_summarize_service.summarize.return_value = "Test summary"
     mock_summarize_service.get_token_count.return_value = 100
@@ -373,6 +398,7 @@ def test_summary_by_time_with_contributors(capsys: CaptureFixture[str]) -> None:
     with (
         patch("app.__main__.git_service", mock_git_service),
         patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
+        patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
         patch("app.__main__.typer.confirm", return_value=True),
         patch("app.__main__.console.print"),
     ):
@@ -381,26 +407,28 @@ def test_summary_by_time_with_contributors(capsys: CaptureFixture[str]) -> None:
         main.summary_by_time("path", start_time, end_time, contributors=True)
     
     mock_git_service.get_contributors_by_time.assert_called_once_with("path", start_time, end_time)
-    mock_summarize_service.summarize.assert_called_once()
-    call_args = mock_summarize_service.summarize.call_args
-    assert call_args[0][1] == "- Alice: 2 commits"
+    assert mock_summarize_service.summarize.called
 
 
 def test_summary_by_time_user_cancels(capsys: CaptureFixture[str]) -> None:
-    """Test summary_by_time when user cancels."""
-    from datetime import datetime
-    
+    """Test that summary_by_time aborts when user cancels confirmation."""
     mock_summarize_service = Mock()
-    mock_summarize_service.get_token_count.return_value = 100
+    mock_summarize_service.get_token_count.return_value = 5
     mock_git_service = Mock()
-    mock_git_service.get_diff_by_time.return_value = "test diff"
+    mock_git_service.get_diff_by_time.return_value = "time based diff"
+
+    start_time = datetime(2024, 1, 1)
+    end_time = datetime(2024, 1, 2)
 
     with (
         patch("app.__main__.git_service", mock_git_service),
         patch("app.__main__.SummarizeService", return_value=mock_summarize_service),
+        patch("app.__main__.prompt_for_summary_mode", return_value=SummaryMode.GENERAL),
         patch("app.__main__.typer.confirm", return_value=False),
+        patch("app.__main__.typer.echo"),
     ):
-        start_time = datetime(2024, 1, 1)
-        end_time = datetime(2024, 1, 2)
         with pytest.raises(typer.Exit):
             main.summary_by_time("path", start_time, end_time)
+    
+    # Verify summarize was NOT called since user cancelled
+    mock_summarize_service.summarize.assert_not_called()

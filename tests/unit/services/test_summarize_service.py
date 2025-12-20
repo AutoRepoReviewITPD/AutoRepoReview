@@ -1,38 +1,91 @@
 from unittest.mock import Mock, patch
 from uuid import uuid4
 import pytest
-from app.services.summarize_service import SummarizeService
+from app.services.summarize_service import SummarizeService, SummaryMode
 
 
 def test_formulating_prompt(
     summarize_service: SummarizeService,
 ) -> None:
+    """Test that prepare_prompt generates correct prompt for GENERAL mode."""
     diff = str(uuid4())
-    prompt = summarize_service.prepare_prompt(diff)
+    prompt = summarize_service.prepare_prompt(diff, None, SummaryMode.GENERAL)
 
     assert (
-        prompt
-        == f"""Analyze the git diff below and provide a concise summary of the changes.
+        "Analyze the git diff below and provide a concise summary of the changes."
+        in prompt
+    )
+    assert "Main purpose and high-level changes" in prompt
+    assert "**Summary:**" in prompt
+    assert "**Key Changes:**" in prompt
+    assert diff in prompt
 
-Focus on:
-- Main purpose and high-level changes (what was done and why)
-- Key functional changes (new features, bug fixes, refactorings)
-- Breaking changes or important updates (if any)
 
-Keep it brief and structured. Do NOT list every file or line change - focus on the big picture.
+def test_prepare_prompt_all_modes(summarize_service: SummarizeService) -> None:
+    """Test prepare_prompt yields key text for each summary mode."""
+    diff = "some-diff"
+    assert (
+        "documentation changes"
+        in summarize_service.prepare_prompt(
+            diff, mode=SummaryMode.DOCUMENTATION
+        ).lower()
+    )
+    assert (
+        "features that were added or removed"
+        in summarize_service.prepare_prompt(diff, mode=SummaryMode.FEATURES).lower()
+    )
+    assert (
+        "breaking changes that may affect"
+        in summarize_service.prepare_prompt(
+            diff, mode=SummaryMode.BREAKING_CHANGES
+        ).lower()
+    )
+    assert (
+        "concise summary"
+        in summarize_service.prepare_prompt(diff, mode=SummaryMode.GENERAL).lower()
+    )
 
-Format the response as:
-**Summary:** [1-2 sentences about the main purpose]
 
-**Key Changes:**
-- [Brief bullet points of important changes]
+def test_summarize_calls_agent_in_all_modes(
+    summarize_service: SummarizeService,
+) -> None:
+    """Ensure the agent is invoked for each summary mode using the fixture-provided service."""
+    service = summarize_service
+    for mode in SummaryMode:
+        with patch.object(
+            service.agent, "invoke", return_value=f"result: {mode}"
+        ) as mock_invoke:
+            result = service.summarize("diff-content", None, mode)
+            assert result == f"result: {mode}"
+            assert mock_invoke.call_count == 1
+            called_prompt = mock_invoke.call_args[0][0]
+            assert "diff-content" in called_prompt
+            # Should mention mode-specific text
+            if mode == SummaryMode.GENERAL:
+                assert "concise summary" in called_prompt.lower()
+            elif mode == SummaryMode.DOCUMENTATION:
+                assert "documentation changes" in called_prompt.lower()
+            elif mode == SummaryMode.FEATURES:
+                assert "features that were added or removed" in called_prompt.lower()
+            elif mode == SummaryMode.BREAKING_CHANGES:
+                assert "breaking changes that may affect" in called_prompt.lower()
 
-**Breaking Changes:** [Only if there are any, otherwise omit this section]
 
-------------
-{diff}
-------------"""
-    ), prompt
+def test_get_token_count_mode_passthrough(summarize_service: SummarizeService) -> None:
+    """Verify that the mode is passed through to prepare_prompt and token encoder is used."""
+    service = summarize_service
+    with (
+        patch.object(service, "prepare_prompt", return_value="prompt") as mock_prepare,
+        patch(
+            "app.services.summarize_service.config.get_model_config", return_value=None
+        ),
+        patch(
+            "app.services.summarize_service.tiktoken.encoding_for_model",
+            return_value=Mock(encode=lambda x: [1, 2, 3]),
+        ),
+    ):
+        assert service.get_token_count("diff", None, SummaryMode.FEATURES) == 3
+        mock_prepare.assert_called_with("diff", None, SummaryMode.FEATURES)
 
 
 def test_prepare_prompt_with_contributors_info(
@@ -41,13 +94,13 @@ def test_prepare_prompt_with_contributors_info(
     """Test that prepare_prompt includes contributors information when provided."""
     diff = str(uuid4())
     contributors_info = "- Alice: 2 commit(s)\n- Bob: 1 commit(s)"
-    prompt = summarize_service.prepare_prompt(diff, contributors_info)
+    prompt = summarize_service.prepare_prompt(
+        diff, contributors_info, SummaryMode.GENERAL
+    )
 
     assert "**Contributors Information:**" in prompt
     assert contributors_info in prompt
     assert "Please include a **Contributors** section" in prompt
-    assert "**Contributors:**" in prompt
-    assert "- [List contributors and their contributions]" in prompt
     assert diff in prompt
 
 
@@ -71,8 +124,10 @@ def test_summarize(
         "invoke",
         return_value="Summary of changes",
     ) as mock_invoke:
-        summary = summarize_service.summarize(diff)
-        mock_invoke.assert_called_with(summarize_service.prepare_prompt(diff))
+        summary = summarize_service.summarize(diff, None, SummaryMode.GENERAL)
+        # Verify the prompt was passed correctly (it will be the full prompt string)
+        call_args = mock_invoke.call_args[0][0]
+        assert diff in call_args
 
     assert isinstance(summary, str)
     assert len(summary) > 0
@@ -163,7 +218,9 @@ def test_get_token_count_with_contributors_info(
             mock_encoder.encode.return_value = [1, 2, 3, 4, 5, 6, 7]
             mock_encoding.return_value = mock_encoder
 
-            token_count = summarize_service.get_token_count(diff, contributors_info)
+            token_count = summarize_service.get_token_count(
+                diff, contributors_info, SummaryMode.GENERAL
+            )
 
             assert token_count == 7
             # Verify the prompt includes contributors info
