@@ -4,7 +4,7 @@ import pytest
 from pytest import CaptureFixture
 import typer
 from rich.markdown import Markdown
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from app import __main__ as main
 from app.services.summarize_service import SummaryMode
@@ -334,7 +334,6 @@ def test_show_config_without_model_name(capsys: CaptureFixture[str]) -> None:
     assert "Model name:" not in captured.out
 
 
-
 def test_summary_handles_git_diff_exception(capsys: CaptureFixture[str]) -> None:
     """Test summary handles exceptions from git_service.get_diff."""
     mock_git_service = Mock()
@@ -358,12 +357,13 @@ def test_summary_with_invalid_commit_hashes(capsys: CaptureFixture[str]) -> None
 
 def test_summary_by_time_function_prints_changes(capsys: CaptureFixture[str]) -> None:
     """Test summary_by_time prints the changes summary."""
-    
+
     mock_summarize_service = Mock()
     mock_summarize_service.summarize.return_value = "Test summary"
     mock_summarize_service.get_token_count.return_value = 100
     mock_git_service = Mock()
     mock_git_service.get_diff_by_time.return_value = "test diff"
+
 
 def test_summary_user_cancels(capsys: CaptureFixture[str]) -> None:
     """Test that when user cancels via confirmation, summarization is aborted."""
@@ -381,7 +381,7 @@ def test_summary_user_cancels(capsys: CaptureFixture[str]) -> None:
     ):
         with pytest.raises(typer.Exit):
             main.summary("path", "commitA", "commitB")
-    
+
     # Verify summarize was NOT called since user cancelled
     mock_summarize_service.summarize.assert_not_called()
 
@@ -405,8 +405,10 @@ def test_summary_by_time_with_contributors(capsys: CaptureFixture[str]) -> None:
         start_time = datetime(2024, 1, 1)
         end_time = datetime(2024, 1, 2)
         main.summary_by_time("path", start_time, end_time, contributors=True)
-    
-    mock_git_service.get_contributors_by_time.assert_called_once_with("path", start_time, end_time)
+
+    mock_git_service.get_contributors_by_time.assert_called_once_with(
+        "path", start_time, end_time
+    )
     assert mock_summarize_service.summarize.called
 
 
@@ -429,6 +431,6 @@ def test_summary_by_time_user_cancels(capsys: CaptureFixture[str]) -> None:
     ):
         with pytest.raises(typer.Exit):
             main.summary_by_time("path", start_time, end_time)
-    
+
     # Verify summarize was NOT called since user cancelled
     mock_summarize_service.summarize.assert_not_called()

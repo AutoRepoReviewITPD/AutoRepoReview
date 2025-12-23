@@ -171,7 +171,9 @@ def test_get_contributors_by_commits_handles_git_log_failure(
 ) -> None:
     """Test get_contributors_by_commits handles git log failure."""
     with patch("app.services.git_service.os.chdir"):
-        with patch.object(git_service, "_call_os", side_effect=Exception("git log failed")):
+        with patch.object(
+            git_service, "_call_os", side_effect=Exception("git log failed")
+        ):
             with pytest.raises(Exception, match="git log failed"):
                 git_service.get_contributors_by_commits("path", "commitA", "commitB")
 
@@ -183,7 +185,9 @@ def test_get_contributors_by_commits_large_number_of_commits(
     mock_output = "\n".join([f"Author{i}|Commit message {i}" for i in range(1000)])
     with patch.object(git_service, "_call_os", return_value=mock_output):
         with patch("app.services.git_service.os.chdir"):
-            result = git_service.get_contributors_by_commits("path", "commitA", "commitB")
+            result = git_service.get_contributors_by_commits(
+                "path", "commitA", "commitB"
+            )
     assert len(result.split("\n")) == 1000
 
 
@@ -192,14 +196,14 @@ def test_get_diff_by_time(
 ) -> None:
     """Test get_diff_by_time returns diff for time range."""
     from datetime import datetime
-    
+
     mock_diff = "diff --git a/file.py b/file.py\n+new line"
     with patch.object(git_service, "_call_os", return_value=mock_diff):
         with patch("app.services.git_service.os.chdir"):
             start_time = datetime(2024, 1, 1, 0, 0, 0)
             end_time = datetime(2024, 1, 2, 0, 0, 0)
             result = git_service.get_diff_by_time("path", start_time, end_time)
-    
+
     assert result == mock_diff
 
 
@@ -208,14 +212,14 @@ def test_get_contributors_by_time_with_contributors(
 ) -> None:
     """Test get_contributors_by_time with multiple contributors."""
     from datetime import datetime
-    
+
     mock_output = "Alice|Fix bug\nBob|Add feature\nAlice|Update docs"
     with patch.object(git_service, "_call_os", return_value=mock_output):
         with patch("app.services.git_service.os.chdir"):
             start_time = datetime(2024, 1, 1, 0, 0, 0)
             end_time = datetime(2024, 1, 2, 0, 0, 0)
             result = git_service.get_contributors_by_time("path", start_time, end_time)
-    
+
     assert "Alice" in result
     assert "Bob" in result
     assert "2 commit(s)" in result or "1 commit(s)" in result
@@ -226,11 +230,11 @@ def test_get_contributors_by_time_empty_output(
 ) -> None:
     """Test get_contributors_by_time with empty output."""
     from datetime import datetime
-    
+
     with patch.object(git_service, "_call_os", return_value=""):
         with patch("app.services.git_service.os.chdir"):
             start_time = datetime(2024, 1, 1, 0, 0, 0)
             end_time = datetime(2024, 1, 2, 0, 0, 0)
             result = git_service.get_contributors_by_time("path", start_time, end_time)
-    
+
     assert result == ""
