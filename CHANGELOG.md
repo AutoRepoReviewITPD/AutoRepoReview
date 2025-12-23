@@ -5,12 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),  
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2025-12-07_
+## [0.1.2] - 2025-12-23
 
 ### Added
 
-- Added functionality for cutomized LLM use, clients can now connect their personal LLM tokens to use their desired LLM. GigaChat was kept as the standard choice
+- Multiple summary modes: General, Documentation, Features, and Breaking Changes
+- Time-based diff analysis via `summary-by-time` command
+- Optional contributors information with `--contributors` flag
+- Token count estimation before summarization to help users understand API usage
+- Improved error handling with clear messages for API connection, authentication, and rate limit errors
+- Markdown-formatted output for better readability
 
+### Changed
+
+- Improved summary prompts for better focus and clarity based on selected mode
+- Enhanced CLI user experience with interactive mode selection
+
+## [0.1.1] - 2025-12-07
+
+### Added
+
+- Added functionality for customized LLM use - clients can now connect their personal LLM tokens to use their desired LLM. GigaChat was kept as the standard choice
+- Configurable API credentials via `configure` command with secure keyring storage
+- Support for multiple LLM providers (OpenAI-compatible APIs)
+
+## [0.1.0] - 2025-12-02
+
+### Added
+
+- Initial MVP release
+- CLI command for summarizing git diffs between commits
 
 ## _Sprint-3: 22-11-2025_
 
