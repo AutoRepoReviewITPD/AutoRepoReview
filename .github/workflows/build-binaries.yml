@@ -69,14 +69,16 @@ jobs:
       - name: Rename artifacts with OS names
         run: |
           cd release-artifacts
-          for dir in */; do
-            DIR_NAME=$(basename "$dir")
-            if [ -f "${dir}autoreporeview.exe" ]; then
-              mv "${dir}autoreporeview.exe" "${DIR_NAME}.exe"
-            elif [ -f "${dir}autoreporeview" ]; then
-              mv "${dir}autoreporeview" "${DIR_NAME}"
+          find . -mindepth 2 -maxdepth 2 -type f -name "autoreporeview*" | while read -r file; do
+            DIR_NAME=$(dirname "$file" | sed 's|^\./||')
+            FILENAME=$(basename "$file")
+            EXTENSION=""
+            if [[ "$FILENAME" == *.exe ]]; then
+              EXTENSION=".exe"
             fi
-            rm -rf "$dir"
+            NEW_NAME="${DIR_NAME}${EXTENSION}"
+            mv -f "$file" "$NEW_NAME"
+            rmdir "$(dirname "$file")" 2>/dev/null || true
           done
       
       - name: Extract version from tag or input
