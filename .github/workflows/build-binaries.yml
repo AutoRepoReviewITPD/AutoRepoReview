@@ -66,6 +66,19 @@ jobs:
         with:
           path: release-artifacts
       
+      - name: Rename artifacts with OS names
+        run: |
+          cd release-artifacts
+          for dir in */; do
+            DIR_NAME=$(basename "$dir")
+            if [ -f "${dir}autoreporeview.exe" ]; then
+              mv "${dir}autoreporeview.exe" "${DIR_NAME}.exe"
+            elif [ -f "${dir}autoreporeview" ]; then
+              mv "${dir}autoreporeview" "${DIR_NAME}"
+            fi
+            rm -rf "$dir"
+          done
+      
       - name: Extract version from tag or input
         id: tag_version
         run: |
@@ -105,9 +118,11 @@ jobs:
             ```
             
             ### Downloads
-            - **Windows**: `autoreporeview.exe`
-            - **Linux**: `autoreporeview` (Linux binary)
-            - **macOS**: `autoreporeview` (macOS binary)
+            - **Windows**: `autoreporeview-windows-latest.exe`
+            - **Linux**: `autoreporeview-ubuntu-latest` (Linux binary)
+            - **macOS**: `autoreporeview-macos-latest` (macOS binary)
+            
+            Note: After downloading, you may want to rename the file to `autoreporeview` (or `autoreporeview.exe` on Windows) for convenience.
             
             ### Installation
             1. Download the binary for your platform
