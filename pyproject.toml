@@ -55,5 +55,4 @@ packages = ["app"]
 autoreporeview = "app.__main__:app"
 
 [tool.mypy]
-mypy_path = "app"
 strict = true
